@@ -1,1 +1,20 @@
+<h1>Manage Reviews</h1>
 
+<h2>Add New Review</h2>
+<form method="POST" action="/add-review">
+  <label>Customer:</label>
+  <select name="customerID">
+    <option value="1">Sam Shell</option>
+    <option value="2">Luna Splash</option>
+    <option value="3">Rocky Paws</option>
+  </select><br>
+  <label>Product:</label>
+  <select name="productID">
+    <option value="1">Cod Roe</option>
+    <option value="2">Rockfish Fillet</option>
+  </select><br>
+  <label>Rating (1–5):</label><input type="number" name="rating" min="1" max="5"><br>
+  <label>Comment:</label><textarea name="comment"></textarea><br>
+  <label>Review Date:</label><input type="date" name="reviewDate"><br>
+  <input type="submit" value="Add Review">
+</form>
