@@ -1,0 +1,100 @@
+{% extends "main.j2" %}
+{% block content %}
+
+<h1>BSG People</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        {# For the table header row, we print the DB attribute names #}
+        <tr>
+            {% for key in people[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {# For each row, print the id, fname, lname, homeworld and age #}
+        {% for person in people %}
+        <tr>
+            <td>{{ person.id }}</td>
+            <td>{{ person.fname }}</td>
+            <td>{{ person.lname }}</td>
+            <td>{{ person.homeworld | default('', true) }}</td>
+            <td>{{ person.age | default('', true) }}</td>
+
+            {# DELETE form #}
+            <form id="delete_person_form">
+                <input type="hidden" name="delete_person_id" value="{{ person.id }}">
+                <input type="hidden" name="delete_person_name" value="{{ person.fname }} {{ person.lname }}">
+                <td>
+                    <button type="submit">
+                        Delete
+                    </button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Person</h2>
+<form class="cuForm" id="create_person_form">
+    <label for="create_person_fname">First Name: </label>
+    <input type="text" name="create_person_fname" id="create_person_fname" required>
+
+    <label for="create_person_lname">Last Name: </label>
+    <input type="text" name="create_person_lname" id="create_person_lname">
+
+    <label for="create_person_homeworld">Homeworld: </label>
+    <select name="create_person_homeworld" id="create_person_homeworld" required>
+        <option value="NULL" selected>Select a Planet</option>
+        <option value="NULL">&lt; None &gt;</option>
+        {% for homeworld in homeworlds %}
+        <option value="{{homeworld['id']}}" required>{{homeworld['name']}}</option>
+        {% endfor %}
+    </select>
+
+    <label for="create_person_age">Age: </label>
+    <input type="number" name="create_person_age" id="create_person_age" min="0">
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update a Person</h2>
+<form class="cuForm" id="update_person_form">
+    <label for="update_person_id">Person to Update: </label>
+    <select name="update_person_id" id="update_person_id" required>
+        <option value="" disabled selected>Select a Person</option>
+        {% for person in people %}
+        <option value="{{person['id']}}" required>
+            {{person['id']}}
+            -
+            {{person['fname']}}
+            {{person['lname']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_person_homeworld">Homeworld: </label>
+    <select name="update_person_homeworld" id="update_person_homeworld" required>
+        <option value="NULL" selected>Select a Planet</option>
+        <option value="NULL">&lt; None &gt;</option>
+        {% for homeworld in homeworlds %}
+        <option value="{{homeworld['id']}}" required>
+            {{homeworld['name']}}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_person_age">Age: </label>
+    <input type="number" name="update_person_age" id="update_person_age" min="0">
+
+    <input type="submit">
+</form>
+
+{% endblock %}

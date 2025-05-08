@@ -1,39 +1,63 @@
-from flask import Flask, render_template, json, redirect
-from flask_mysqldb import MySQL
-from flask import request
-import os
+# ########################################
+# ########## SETUP
+
+from flask import Flask, render_template, request, redirect
+import database.db_connector as db
+
+PORT = 54535
 
 app = Flask(__name__)
 
-app.config['MYSQL_HOST'] = 'classmysql.engr.oregonstate.edu'
-app.config['MYSQL_USER'] = 'cs340_ousleye'
-app.config['MYSQL_PASSWORD'] = '1458'
-app.config['MYSQL_DB'] = 'cs340_ousleye'
-app.config['MYSQL_CURSORCLASS'] = "DictCursor"
+# ########################################
+# ########## ROUTE HANDLERS
+
+# READ ROUTES
+@app.route("/", methods=["GET"])
+def home():
+    try:
+        return render_template("home.j2")
+
+    except Exception as e:
+        print(f"Error rendering page: {e}")
+        return "An error occurred while rendering the page.", 500
 
 
-mysql = MySQL(app)
+@app.route("/bsg-people", methods=["GET"])
+def bsg_people():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+
+        # Create and execute our queries
+        # In query1, we use a JOIN clause to display the names of the homeworlds,
+        #       instead of just ID values
+        query1 = "SELECT bsg_people.id, bsg_people.fname, bsg_people.lname, \
+            bsg_planets.name AS 'homeworld', bsg_people.age FROM bsg_people \
+            LEFT JOIN bsg_planets ON bsg_people.homeworld = bsg_planets.id;"
+        query2 = "SELECT * FROM bsg_planets;"
+        people = db.query(dbConnection, query1).fetchall()
+        homeworlds = db.query(dbConnection, query2).fetchall()
+
+        # Render the bsg-people.j2 file, and also send the renderer
+        # a couple objects that contains bsg_people and bsg_homeworld information
+        return render_template(
+            "bsg-people.j2", people=people, homeworlds=homeworlds
+        )
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return "An error occurred while executing the database queries.", 500
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 
-# Routes
-@app.route('/')
-def root():
-    query1 = 'DROP TABLE IF EXISTS diagnostic;';
-    query2 = 'CREATE TABLE diagnostic(id INT PRIMARY KEY AUTO_INCREMENT, text VARCHAR(255) NOT NULL);';
-    query3 = 'INSERT INTO diagnostic (text) VALUES ("MySQL and Flask is working for ousleye!");';
-    query4 = 'SELECT * FROM diagnostic;';
-    cur = mysql.connection.cursor()
-    cur.execute(query1)
-    cur.execute(query2)
-    cur.execute(query3)
-    cur.execute(query4)
-    results = cur.fetchall()
 
-    return "<h1>MySQL Results:</h1>" + str(results[0])
+# ########################################
+# ########## LISTENER
 
-
-# Listener
 if __name__ == "__main__":
-
-    #Start the app to run on a port of your choosing
-    app.run(port=54535, debug=True)
+    app.run(
+        port=PORT, debug=True
+    )  # debug is an optional parameter. Behaves like nodemon in Node.
