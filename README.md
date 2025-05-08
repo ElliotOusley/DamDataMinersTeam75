@@ -28,3 +28,6 @@ pkill -u yourONID gunicorn
 
 ### To close a session:
 deactivate
+
+### When up, the website can be found at:
+http://classwork.engr.oregonstate.edu:54535
