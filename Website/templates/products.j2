@@ -1,1 +1,17 @@
+<h1>Manage Products</h1>
+
+<h2>Add New Product</h2>
+<form method="POST" action="/add-product">
+  <label>Name:</label><input type="text" name="name"><br>
+  <label>Item Type:</label><input type="text" name="item"><br>
+  <label>Price per Unit:</label><input type="number" step="0.01" name="price"><br>
+  <label>Quantity:</label><input type="number" name="quantity"><br>
+  <label>Supplier:</label>
+  <select name="supplierID">
+    <option value="1">Kelp Fisheries</option>
+    <option value="2">Crabby Co.</option>
+    <option value="3">Deep Sea Harvesters</option>
+  </select><br>
+  <input type="submit" value="Add Product">
+</form>
 
