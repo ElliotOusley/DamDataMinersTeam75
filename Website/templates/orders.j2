@@ -1,1 +1,21 @@
+<h1>Manage Orders</h1>
+
+<h2>Add New Order</h2>
+<form method="POST" action="/add-order">
+  <label>Customer:</label>
+  <select name="customerID">
+    <option value="1">Sam Shell</option>
+    <option value="2">Luna Splash</option>
+    <option value="3">Rocky Paws</option>
+  </select><br>
+  <label>Order Date:</label><input type="datetime-local" name="orderDate"><br>
+  <label>Status:</label>
+  <select name="status">
+    <option value="pending">Pending</option>
+    <option value="shipped">Shipped</option>
+    <option value="delivered">Delivered</option>
+    <option value="cancelled">Cancelled</option>
+  </select><br>
+  <input type="submit" value="Add Order">
+</form>
 
