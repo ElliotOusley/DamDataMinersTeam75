@@ -1,20 +1,88 @@
-<h1>Manage Order Items</h1>
+{% extends "main.j2" %}
+{% block content %}
 
-<h2>Add Item to Order</h2>
-<form method="POST" action="/add-orderitem">
-  <label>Product:</label>
-  <select name="productID">
-    <option value="1">Cod Roe</option>
-    <option value="2">Rockfish Fillet</option>
-    <option value="3">Crab Claws</option>
-  </select><br>
-  <label>Order:</label>
-  <select name="orderID">
-    <option value="1">Order #1</option>
-    <option value="2">Order #2</option>
-  </select><br>
-  <label>Quantity:</label><input type="number" name="quantity"><br>
-  <label>Price:</label><input type="number" step="0.01" name="price"><br>
-  <input type="submit" value="Add to Order">
+<h1>Order Items</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% for key in orderitems[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for item in orderitems %}
+        <tr>
+            <td>{{ item.OrderItemsID }}</td>
+            <td>{{ item.ProductID }}</td>
+            <td>{{ item.OrderID }}</td>
+            <td>{{ item.Quantity }}</td>
+            <td>{{ item.Price }}</td>
+
+            {# DELETE form #}
+            <form id="delete_orderitem_form">
+                <input type="hidden" name="delete_orderitem_id" value="{{ item.OrderItemsID }}">
+                <td>
+                    <button type="submit">Delete</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create an Order Item</h2>
+<form class="cuForm" id="create_orderitem_form">
+    <label for="create_orderitem_product">Product: </label>
+    <select name="create_orderitem_product" id="create_orderitem_product" required>
+        <option value="" disabled selected>Select a Product</option>
+        {% for product in products %}
+        <option value="{{ product.ProductID }}">{{ product.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="create_orderitem_order">Order: </label>
+    <select name="create_orderitem_order" id="create_orderitem_order" required>
+        <option value="" disabled selected>Select an Order</option>
+        {% for order in orders %}
+        <option value="{{ order.OrderID }}">{{ order.OrderID }} - {{ order.OrderDate }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="create_orderitem_quantity">Quantity: </label>
+    <input type="number" name="create_orderitem_quantity" id="create_orderitem_quantity" min="1" required>
+
+    <label for="create_orderitem_price">Price (each): </label>
+    <input type="number" name="create_orderitem_price" id="create_orderitem_price" step="0.01" required>
+
+    <input type="submit">
 </form>
 
+{# UPDATE form #}
+<h2>Update an Order Item</h2>
+<form class="cuForm" id="update_orderitem_form">
+    <label for="update_orderitem_id">Order Item to Update: </label>
+    <select name="update_orderitem_id" id="update_orderitem_id" required>
+        <option value="" disabled selected>Select an Order Item</option>
+        {% for item in orderitems %}
+        <option value="{{ item.OrderItemsID }}">
+            {{ item.OrderItemsID }} - Order {{ item.OrderID }}, Product {{ item.ProductID }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_orderitem_quantity">Quantity: </label>
+    <input type="number" name="update_orderitem_quantity" id="update_orderitem_quantity" min="1">
+
+    <label for="update_orderitem_price">Price (each): </label>
+    <input type="number" name="update_orderitem_price" id="update_orderitem_price" step="0.01">
+
+    <input type="submit">
+</form>
+
+{% endblock %}

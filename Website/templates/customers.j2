@@ -1,19 +1,78 @@
-<!-- templates/customers.j2 -->
-<h1>Manage Customers</h1>
+{% extends "main.j2" %}
+{% block content %}
 
-<h2>Add New Customer</h2>
-<form method="POST" action="/add-customer">
-  <label>Name:</label><input type="text" name="name"><br>
-  <label>Species:</label><input type="text" name="species"><br>
-  <label>Address:</label><input type="text" name="address"><br>
-  <label>Contact Email:</label><input type="email" name="email"><br>
-  <input type="submit" value="Add Customer">
-</form>
+<h1>Customers</h1>
 
-<h2>Existing Customers</h2>
+{# READ table #}
 <table>
-  <tr><th>ID</th><th>Name</th><th>Species</th><th>Address</th><th>Email</th></tr>
-  <!-- Static example row -->
-  <tr><td>1</td><td>Sam Shell</td><td>Sea Otter</td><td>Kelp Forest Way</td><td>shells@seamail.com</td></tr>
+    <thead>
+        <tr>
+            {% for key in customers[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for customer in customers %}
+        <tr>
+            <td>{{ customer.CustomerID }}</td>
+            <td>{{ customer.Name }}</td>
+            <td>{{ customer.Species }}</td>
+            <td>{{ customer.Address | default('', true) }}</td>
+            <td>{{ customer.ContactEmail | default('', true) }}</td>
+
+            {# DELETE form #}
+            <form id="delete_customer_form">
+                <input type="hidden" name="delete_customer_id" value="{{ customer.CustomerID }}">
+                <input type="hidden" name="delete_customer_name" value="{{ customer.Name }}">
+                <td>
+                    <button type="submit">Delete</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
 </table>
 
+{# CREATE form #}
+<h2>Create a Customer</h2>
+<form class="cuForm" id="create_customer_form">
+    <label for="create_customer_name">Name: </label>
+    <input type="text" name="create_customer_name" id="create_customer_name" required>
+
+    <label for="create_customer_species">Species: </label>
+    <input type="text" name="create_customer_species" id="create_customer_species" required>
+
+    <label for="create_customer_address">Address: </label>
+    <input type="text" name="create_customer_address" id="create_customer_address">
+
+    <label for="create_customer_email">Contact Email: </label>
+    <input type="email" name="create_customer_email" id="create_customer_email">
+
+    <input type="submit">
+</form>
+
+{# UPDATE form #}
+<h2>Update a Customer</h2>
+<form class="cuForm" id="update_customer_form">
+    <label for="update_customer_id">Customer to Update: </label>
+    <select name="update_customer_id" id="update_customer_id" required>
+        <option value="" disabled selected>Select a Customer</option>
+        {% for customer in customers %}
+        <option value="{{ customer.CustomerID }}">
+            {{ customer.CustomerID }} - {{ customer.Name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_customer_address">New Address: </label>
+    <input type="text" name="update_customer_address" id="update_customer_address">
+
+    <label for="update_customer_email">New Contact Email: </label>
+    <input type="email" name="update_customer_email" id="update_customer_email">
+
+    <input type="submit">
+</form>
+
+{% endblock %}

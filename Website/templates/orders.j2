@@ -1,21 +1,96 @@
-<h1>Manage Orders</h1>
+{% extends "main.j2" %}
+{% block content %}
 
-<h2>Add New Order</h2>
-<form method="POST" action="/add-order">
-  <label>Customer:</label>
-  <select name="customerID">
-    <option value="1">Sam Shell</option>
-    <option value="2">Luna Splash</option>
-    <option value="3">Rocky Paws</option>
-  </select><br>
-  <label>Order Date:</label><input type="datetime-local" name="orderDate"><br>
-  <label>Status:</label>
-  <select name="status">
-    <option value="pending">Pending</option>
-    <option value="shipped">Shipped</option>
-    <option value="delivered">Delivered</option>
-    <option value="cancelled">Cancelled</option>
-  </select><br>
-  <input type="submit" value="Add Order">
+<h1>Orders</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% for key in orders[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for order in orders %}
+        <tr>
+            <td>{{ order.OrderID }}</td>
+            <td>{{ order.OrderDate }}</td>
+            <td>{{ order.OrderStatus }}</td>
+            <td>{{ order.CustomerID }}</td>
+
+            {# DELETE form #}
+            <form id="delete_order_form">
+                <input type="hidden" name="delete_order_id" value="{{ order.OrderID }}">
+                <td>
+                    <button type="submit">Delete</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create an Order</h2>
+<form class="cuForm" id="create_order_form">
+    <label for="create_order_date">Order Date: </label>
+    <input type="date" name="create_order_date" id="create_order_date" required>
+
+    <label for="create_order_status">Order Status: </label>
+    <select name="create_order_status" id="create_order_status" required>
+        <option value="" disabled selected>Select Status</option>
+        <option value="pending">Pending</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+    </select>
+
+    <label for="create_order_customer">Customer: </label>
+    <select name="create_order_customer" id="create_order_customer" required>
+        <option value="" disabled selected>Select a Customer</option>
+        {% for customer in customers %}
+        <option value="{{ customer.CustomerID }}">{{ customer.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
 </form>
 
+{# UPDATE form #}
+<h2>Update an Order</h2>
+<form class="cuForm" id="update_order_form">
+    <label for="update_order_id">Order to Update: </label>
+    <select name="update_order_id" id="update_order_id" required>
+        <option value="" disabled selected>Select an Order</option>
+        {% for order in orders %}
+        <option value="{{ order.OrderID }}">
+            {{ order.OrderID }} - {{ order.OrderDate }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_order_status">Order Status: </label>
+    <select name="update_order_status" id="update_order_status">
+        <option value="" disabled selected>Select Status</option>
+        <option value="pending">Pending</option>
+        <option value="shipped">Shipped</option>
+        <option value="delivered">Delivered</option>
+        <option value="cancelled">Cancelled</option>
+    </select>
+
+    <label for="update_order_customer">Customer: </label>
+    <select name="update_order_customer" id="update_order_customer">
+        <option value="" disabled selected>Select a Customer</option>
+        {% for customer in customers %}
+        <option value="{{ customer.CustomerID }}">{{ customer.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
+</form>
+
+{% endblock %}

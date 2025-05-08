@@ -1,10 +1,75 @@
-<h1>Manage Suppliers</h1>
+{% extends "main.j2" %}
+{% block content %}
 
-<h2>Add New Supplier</h2>
-<form method="POST" action="/add-supplier">
-  <label>Name:</label><input type="text" name="name"><br>
-  <label>Email:</label><input type="email" name="email"><br>
-  <label>Location:</label><input type="text" name="location"><br>
-  <input type="submit" value="Add Supplier">
+<h1>Suppliers</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% for key in suppliers[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for supplier in suppliers %}
+        <tr>
+            <td>{{ supplier.SupplierID }}</td>
+            <td>{{ supplier.Name }}</td>
+            <td>{{ supplier.ContactEmail }}</td>
+            <td>{{ supplier.Location | default('', true) }}</td>
+
+            {# DELETE form #}
+            <form id="delete_supplier_form">
+                <input type="hidden" name="delete_supplier_id" value="{{ supplier.SupplierID }}">
+                <input type="hidden" name="delete_supplier_name" value="{{ supplier.Name }}">
+                <td>
+                    <button type="submit">Delete</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Supplier</h2>
+<form class="cuForm" id="create_supplier_form">
+    <label for="create_supplier_name">Name: </label>
+    <input type="text" name="create_supplier_name" id="create_supplier_name" required>
+
+    <label for="create_supplier_email">Contact Email: </label>
+    <input type="email" name="create_supplier_email" id="create_supplier_email">
+
+    <label for="create_supplier_location">Location: </label>
+    <input type="text" name="create_supplier_location" id="create_supplier_location">
+
+    <input type="submit">
 </form>
 
+{# UPDATE form #}
+<h2>Update a Supplier</h2>
+<form class="cuForm" id="update_supplier_form">
+    <label for="update_supplier_id">Supplier to Update: </label>
+    <select name="update_supplier_id" id="update_supplier_id" required>
+        <option value="" disabled selected>Select a Supplier</option>
+        {% for supplier in suppliers %}
+        <option value="{{ supplier.SupplierID }}">
+            {{ supplier.SupplierID }} - {{ supplier.Name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_supplier_email">Contact Email: </label>
+    <input type="email" name="update_supplier_email" id="update_supplier_email">
+
+    <label for="update_supplier_location">Location: </label>
+    <input type="text" name="update_supplier_location" id="update_supplier_location">
+
+    <input type="submit">
+</form>
+
+{% endblock %}

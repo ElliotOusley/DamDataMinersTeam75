@@ -1,17 +1,103 @@
-<h1>Manage Products</h1>
+{% extends "main.j2" %}
+{% block content %}
 
-<h2>Add New Product</h2>
-<form method="POST" action="/add-product">
-  <label>Name:</label><input type="text" name="name"><br>
-  <label>Item Type:</label><input type="text" name="item"><br>
-  <label>Price per Unit:</label><input type="number" step="0.01" name="price"><br>
-  <label>Quantity:</label><input type="number" name="quantity"><br>
-  <label>Supplier:</label>
-  <select name="supplierID">
-    <option value="1">Kelp Fisheries</option>
-    <option value="2">Crabby Co.</option>
-    <option value="3">Deep Sea Harvesters</option>
-  </select><br>
-  <input type="submit" value="Add Product">
+<h1>Products</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% for key in products[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for product in products %}
+        <tr>
+            <td>{{ product.ProductID }}</td>
+            <td>{{ product.Name }}</td>
+            <td>{{ product.Category }}</td>
+            <td>{{ product.PricePerUnit }}</td>
+            <td>{{ product.Quantity }}</td>
+            <td>{{ 'Yes' if product.IsSeasonal else 'No' }}</td>
+            <td>{{ product.SupplierID }}</td>
+
+            {# DELETE form #}
+            <form id="delete_product_form">
+                <input type="hidden" name="delete_product_id" value="{{ product.ProductID }}">
+                <input type="hidden" name="delete_product_name" value="{{ product.Name }}">
+                <td>
+                    <button type="submit">Delete</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Product</h2>
+<form class="cuForm" id="create_product_form">
+    <label for="create_product_name">Name: </label>
+    <input type="text" name="create_product_name" id="create_product_name" required>
+
+    <label for="create_product_category">Category: </label>
+    <input type="text" name="create_product_category" id="create_product_category" required>
+
+    <label for="create_product_price">Price Per Unit: </label>
+    <input type="number" name="create_product_price" id="create_product_price" step="0.01" required>
+
+    <label for="create_product_quantity">Quantity: </label>
+    <input type="number" name="create_product_quantity" id="create_product_quantity" min="0" required>
+
+    <label for="create_product_isseasonal">Seasonal? </label>
+    <input type="checkbox" name="create_product_isseasonal" id="create_product_isseasonal">
+
+    <label for="create_product_supplier">Supplier: </label>
+    <select name="create_product_supplier" id="create_product_supplier" required>
+        <option value="" disabled selected>Select a Supplier</option>
+        {% for supplier in suppliers %}
+        <option value="{{ supplier.SupplierID }}">{{ supplier.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
 </form>
 
+{# UPDATE form #}
+<h2>Update a Product</h2>
+<form class="cuForm" id="update_product_form">
+    <label for="update_product_id">Product to Update: </label>
+    <select name="update_product_id" id="update_product_id" required>
+        <option value="" disabled selected>Select a Product</option>
+        {% for product in products %}
+        <option value="{{ product.ProductID }}">
+            {{ product.ProductID }} - {{ product.Name }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_product_price">Price Per Unit: </label>
+    <input type="number" name="update_product_price" id="update_product_price" step="0.01">
+
+    <label for="update_product_quantity">Quantity: </label>
+    <input type="number" name="update_product_quantity" id="update_product_quantity" min="0">
+
+    <label for="update_product_isseasonal">Seasonal? </label>
+    <input type="checkbox" name="update_product_isseasonal" id="update_product_isseasonal">
+
+    <label for="update_product_supplier">Supplier: </label>
+    <select name="update_product_supplier" id="update_product_supplier">
+        <option value="" disabled selected>Select a Supplier</option>
+        {% for supplier in suppliers %}
+        <option value="{{ supplier.SupplierID }}">{{ supplier.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
+</form>
+
+{% endblock %}

@@ -1,20 +1,92 @@
-<h1>Manage Reviews</h1>
+{% extends "main.j2" %}
+{% block content %}
 
-<h2>Add New Review</h2>
-<form method="POST" action="/add-review">
-  <label>Customer:</label>
-  <select name="customerID">
-    <option value="1">Sam Shell</option>
-    <option value="2">Luna Splash</option>
-    <option value="3">Rocky Paws</option>
-  </select><br>
-  <label>Product:</label>
-  <select name="productID">
-    <option value="1">Cod Roe</option>
-    <option value="2">Rockfish Fillet</option>
-  </select><br>
-  <label>Rating (1–5):</label><input type="number" name="rating" min="1" max="5"><br>
-  <label>Comment:</label><textarea name="comment"></textarea><br>
-  <label>Review Date:</label><input type="date" name="reviewDate"><br>
-  <input type="submit" value="Add Review">
+<h1>Product Reviews</h1>
+
+{# READ table #}
+<table>
+    <thead>
+        <tr>
+            {% for key in reviews[0].keys() %}
+            <th>{{ key }}</th>
+            {% endfor %}
+            <th></th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for review in reviews %}
+        <tr>
+            <td>{{ review.ReviewID }}</td>
+            <td>{{ review.CustomerID }}</td>
+            <td>{{ review.ReviewDate }}</td>
+            <td>{{ review.Rating }}</td>
+            <td>{{ review.Comment | default('', true) }}</td>
+            <td>{{ review.ProductID }}</td>
+
+            {# DELETE form #}
+            <form id="delete_review_form">
+                <input type="hidden" name="delete_review_id" value="{{ review.ReviewID }}">
+                <td>
+                    <button type="submit">Delete</button>
+                </td>
+            </form>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{# CREATE form #}
+<h2>Create a Review</h2>
+<form class="cuForm" id="create_review_form">
+    <label for="create_review_customer">Customer: </label>
+    <select name="create_review_customer" id="create_review_customer" required>
+        <option value="" disabled selected>Select a Customer</option>
+        {% for customer in customers %}
+        <option value="{{ customer.CustomerID }}">{{ customer.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <label for="create_review_date">Review Date: </label>
+    <input type="date" name="create_review_date" id="create_review_date" required>
+
+    <label for="create_review_rating">Rating (1-5): </label>
+    <input type="number" name="create_review_rating" id="create_review_rating" min="1" max="5" required>
+
+    <label for="create_review_comment">Comment: </label>
+    <textarea name="create_review_comment" id="create_review_comment"></textarea>
+
+    <label for="create_review_product">Product: </label>
+    <select name="create_review_product" id="create_review_product" required>
+        <option value="" disabled selected>Select a Product</option>
+        {% for product in products %}
+        <option value="{{ product.ProductID }}">{{ product.Name }}</option>
+        {% endfor %}
+    </select>
+
+    <input type="submit">
 </form>
+
+{# UPDATE form #}
+<h2>Update a Review</h2>
+<form class="cuForm" id="update_review_form">
+    <label for="update_review_id">Review to Update: </label>
+    <select name="update_review_id" id="update_review_id" required>
+        <option value="" disabled selected>Select a Review</option>
+        {% for review in reviews %}
+        <option value="{{ review.ReviewID }}">
+            {{ review.ReviewID }} - Customer {{ review.CustomerID }}, Product {{ review.ProductID }}
+        </option>
+        {% endfor %}
+    </select>
+
+    <label for="update_review_rating">Rating (1-5): </label>
+    <input type="number" name="update_review_rating" id="update_review_rating" min="1" max="5">
+
+    <label for="update_review_comment">Comment: </label>
+    <textarea name="update_review_comment" id="update_review_comment"></textarea>
+
+    <input type="submit">
+</form>
+
+{% endblock %}
