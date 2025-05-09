@@ -1,17 +1,114 @@
--- INSERT CUSTOMER
-INSERT INTO Customers (Name, Species, Address, ContactEmail)
-VALUES (@name, @species, @address, @contactEmail);
+--Citation for: Data Definition
+--Date: 5/8/25
+--Adapted from Exploration - bsg_sample_data_manipulation_queries.sql
+--Source URL: https://canvas.oregonstate.edu/courses/1999601/assignments/10006387
 
--- SELECT ALL PRODUCTS
+
+-- Customers --
+SELECT * FROM Customers; 
+
+INSERT INTO Customers (Name, Species, Address, ContactEmail)
+VALUES (:nameInput, :speciesInput, :addressInput, :contactEmailInput);
+
+UPDATE Customers
+SET Name = :name,
+    Species = :speciesInput,
+    Address = :addressInput,
+    ContactEmail = :contactEmailInput
+WHERE CustomerID = :customerIDInput;
+
+DELETE FROM Customers
+WHERE CustomerID = :customerIDInput;
+
+---------------
+
+-- Suppliers --
+SELECT * FROM Suppliers;
+
+INSERT INTO Suppliers (Name, ContactEmail, Location)
+VALUES (:nameInput, :contactEmailInput, :locationInput);
+
+UPDATE Suppliers
+SET Name = :nameInput,
+    ContactEmail = :contactEmailInput,
+    Location = :locationInput
+WHERE SupplierID = :supplierIDInput;
+
+DELETE FROM Suppliers
+WHERE SupplierID = :supplierIDInput;
+
+---------------
+
+-- Products --
 SELECT * FROM Products;
 
--- INSERT PRODUCT
-INSERT INTO Products (Name, Item, PricePerUnit, Quantity, SupplierID)
-VALUES (@name, @item, @price, @quantity, @supplierID);
+INSERT INTO Products (Name, Category, PricePerUnit, Quantity, IsSeasonal, SupplierID)
+VALUES (:nameInput, :categoryInput, :priceInput, :quantityInput, :isSeasonalInput, :supplierIDInput);
 
--- UPDATE ORDER STATUS
-UPDATE Orders SET OrderStatus = @status WHERE OrderID = @orderID;
+UPDATE Products
+SET Name = :nameInput,
+    Category = :categoryInput,
+    PricePerUnit = :priceInput,
+    Quantity = :quantityInput,
+    IsSeasonal = :isSeasonalInput,
+    SupplierID = :supplierIDInput
+WHERE ProductID = :productIDInput;
 
--- DELETE REVIEW
-DELETE FROM Reviews WHERE ReviewID = @reviewID;
+DELETE FROM Products
+WHERE ProductID = :productIDInput;
 
+---------------
+
+-- Orders --
+SELECT * FROM Orders;
+
+INSERT INTO Orders (OrderDate, OrderStatus, CustomerID)
+VALUES (:orderDateInput, :statusInput, :customerIDInput);
+
+UPDATE Orders
+SET OrderDate = :orderDateInput,
+    OrderStatus = :statusInput,
+    CustomerID = :customerIDInput
+WHERE OrderID = :orderIDInput;
+
+DELETE FROM Orders
+WHERE OrderID = :orderIDInput;
+
+---------------
+
+-- OrderItems --
+SELECT * FROM OrderItems;
+
+INSERT INTO OrderItems (ProductID, OrderID, Quantity, Price)
+VALUES (:productIDInput, :orderIDInput, :quantityInput, :priceInput);
+
+UPDATE OrderItems
+SET ProductID = :productIDInput,
+    OrderID = :orderIDInput,
+    Quantity = :quantityInput,
+    Price = :priceInput
+WHERE OrderItemsID = :orderItemsIDInput;
+
+DELETE FROM OrderItems
+WHERE OrderItemsID = :orderItemsIDInput;
+
+---------------
+
+-- Reviews --
+SELECT * FROM Reviews;
+
+INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID)
+VALUES (:customerIDInput, :reviewDateInput, :ratingInput, :commentInput, :productIDInput);
+
+UPDATE Reviews
+SET CustomerID = :customerIDInput,
+    ReviewDate = :reviewDateInput,
+    Rating = :ratingInput,
+    Comment = :commentInput,
+    ProductID = :productIDInput
+WHERE ReviewID = :reviewIDInput;
+
+DELETE FROM Reviews
+WHERE ReviewID = :reviewIDInput;
+
+---------------
