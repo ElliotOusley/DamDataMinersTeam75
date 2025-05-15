@@ -10,7 +10,7 @@ CREATE OR REPLACE TABLE Customers (
   Name VARCHAR(100) NOT NULL,
   Species VARCHAR(50) NOT NULL,
   Address VARCHAR(100),
-  ContactEmail VARCHAR(100),
+  ContactEmail VARCHAR(100) NOT NULL,
   PRIMARY KEY (CustomerID)
 );
 
