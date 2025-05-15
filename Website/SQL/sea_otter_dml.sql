@@ -1,3 +1,5 @@
+-- Author: Elliot Ousley
+-- Author: Hau'oli O'Brien
 --Citation for: Data Definition
 --Date: 5/8/25
 --Adapted from Exploration - bsg_sample_data_manipulation_queries.sql
