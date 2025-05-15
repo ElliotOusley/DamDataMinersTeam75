@@ -6,8 +6,9 @@
 --Source URL: https://canvas.oregonstate.edu/courses/1999601/assignments/10006387
 
 
+
 -- Customers --
-SELECT * FROM Customers; 
+SELECT Name, Species, Address, ContactEmail FROM Customers; 
 
 INSERT INTO Customers (Name, Species, Address, ContactEmail)
 VALUES (:nameInput, :speciesInput, :addressInput, :contactEmailInput);
@@ -25,7 +26,7 @@ WHERE CustomerID = :customerIDInput;
 ---------------
 
 -- Suppliers --
-SELECT * FROM Suppliers;
+SELECT Name, ContactEmail, Location FROM Suppliers;
 
 INSERT INTO Suppliers (Name, ContactEmail, Location)
 VALUES (:nameInput, :contactEmailInput, :locationInput);
@@ -42,7 +43,7 @@ WHERE SupplierID = :supplierIDInput;
 ---------------
 
 -- Products --
-SELECT * FROM Products;
+SELECT Name, Category, PricePerUnit, Quantity, IsSeasonal, SupplierID FROM Products;
 
 INSERT INTO Products (Name, Category, PricePerUnit, Quantity, IsSeasonal, SupplierID)
 VALUES (:nameInput, :categoryInput, :priceInput, :quantityInput, :isSeasonalInput, :supplierIDInput);
@@ -62,7 +63,7 @@ WHERE ProductID = :productIDInput;
 ---------------
 
 -- Orders --
-SELECT * FROM Orders;
+SELECT OrderDate, OrderStatus, CustomerID FROM Orders;
 
 INSERT INTO Orders (OrderDate, OrderStatus, CustomerID)
 VALUES (:orderDateInput, :statusInput, :customerIDInput);
@@ -79,7 +80,7 @@ WHERE OrderID = :orderIDInput;
 ---------------
 
 -- OrderItems --
-SELECT * FROM OrderItems;
+SELECT ProductID, OrderID, Quantity, Price FROM OrderItems;
 
 INSERT INTO OrderItems (ProductID, OrderID, Quantity, Price)
 VALUES (:productIDInput, :orderIDInput, :quantityInput, :priceInput);
@@ -97,7 +98,7 @@ WHERE OrderItemsID = :orderItemsIDInput;
 ---------------
 
 -- Reviews --
-SELECT * FROM Reviews;
+SELECT CustomerID, ReviewDate, Rating, Comment, ProductID FROM Reviews;
 
 INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID)
 VALUES (:customerIDInput, :reviewDateInput, :ratingInput, :commentInput, :productIDInput);
