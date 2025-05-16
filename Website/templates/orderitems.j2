@@ -7,19 +7,21 @@
 <table>
     <thead>
         <tr>
-            {% for key in orderitems[0].keys() %}
-            <th>{{ key }}</th>
-            {% endfor %}
-            <th></th>
+        <th>Order Item ID</th>
+        <th>Product Name</th>
+        <th>Order Date</th>
+        <th>Quantity</th>
+        <th>Price</th>
         </tr>
     </thead>
+
 
     <tbody>
         {% for item in orderitems %}
         <tr>
             <td>{{ item.OrderItemsID }}</td>
-            <td>{{ item.ProductID }}</td>
-            <td>{{ item.OrderID }}</td>
+            <td>{{ item.ProductName }}</td>
+            <td>{{ item.OrderDate }}</td>
             <td>{{ item.Quantity }}</td>
             <td>{{ item.Price }}</td>
 

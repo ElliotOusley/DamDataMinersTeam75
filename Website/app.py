@@ -62,7 +62,19 @@ def customers():
 def products():
     try:
         dbConnection = db.connectDB()
-        query = "SELECT * FROM Products;"
+        query = """
+            SELECT 
+                Products.ProductID, 
+                Products.Name, 
+                Products.Category, 
+                Products.PricePerUnit, 
+                Products.Quantity, 
+                Products.IsSeasonal, 
+                Products.SupplierID,
+                Suppliers.Name AS SupplierName
+            FROM Products
+            JOIN Suppliers ON Products.SupplierID = Suppliers.SupplierID;
+        """
         products_data = db.query(dbConnection, query).fetchall()
         return render_template("products.j2", products=products_data)
     except Exception as e:
@@ -75,7 +87,16 @@ def products():
 def orders():
     try:
         dbConnection = db.connectDB()
-        query = "SELECT * FROM Orders;"
+        query = """
+            SELECT 
+                Orders.OrderID,
+                Orders.OrderDate,
+                Orders.OrderStatus,
+                Orders.CustomerID,
+                Customers.Name AS CustomerName
+            FROM Orders
+            JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
+        """
         orders_data = db.query(dbConnection, query).fetchall()
         return render_template("orders.j2", orders=orders_data)
     except Exception as e:
@@ -88,7 +109,19 @@ def orders():
 def orderitems():
     try:
         dbConnection = db.connectDB()
-        query = "SELECT * FROM OrderItems;"
+        query = """
+            SELECT 
+                OrderItems.OrderItemsID,
+                Products.Name AS ProductName,
+                Orders.OrderDate,
+                OrderItems.Quantity,
+                OrderItems.Price,
+                OrderItems.OrderID,
+                OrderItems.ProductID
+            FROM OrderItems
+            JOIN Products ON OrderItems.ProductID = Products.ProductID
+            JOIN Orders ON OrderItems.OrderID = Orders.OrderID;
+        """
         orderitems_data = db.query(dbConnection, query).fetchall()
         return render_template("orderitems.j2", orderitems=orderitems_data)
     except Exception as e:
@@ -114,7 +147,18 @@ def suppliers():
 def reviews():
     try:
         dbConnection = db.connectDB()
-        query = "SELECT * FROM Reviews;"
+        query = """
+            SELECT 
+                Reviews.ReviewID,
+                Reviews.ReviewDate,
+                Reviews.Rating,
+                Reviews.Comment,
+                Customers.Name AS CustomerName,
+                Products.Name AS ProductName
+            FROM Reviews
+            JOIN Customers ON Reviews.CustomerID = Customers.CustomerID
+            JOIN Products ON Reviews.ProductID = Products.ProductID;
+        """
         reviews_data = db.query(dbConnection, query).fetchall()
         return render_template("reviews.j2", reviews=reviews_data)
     except Exception as e:
@@ -125,4 +169,3 @@ def reviews():
 
 if __name__ == "__main__":
     app.run(port=PORT, debug=True)
-

@@ -7,10 +7,12 @@
 <table>
     <thead>
         <tr>
-            {% for key in reviews[0].keys() %}
-            <th>{{ key }}</th>
-            {% endfor %}
-            <th></th>
+        <th>Review ID</th>
+        <th>Date</th>
+        <th>Rating</th>
+        <th>Comment</th>
+        <th>Customer</th>
+        <th>Product</th>
         </tr>
     </thead>
 
@@ -18,11 +20,11 @@
         {% for review in reviews %}
         <tr>
             <td>{{ review.ReviewID }}</td>
-            <td>{{ review.CustomerID }}</td>
             <td>{{ review.ReviewDate }}</td>
             <td>{{ review.Rating }}</td>
             <td>{{ review.Comment | default('', true) }}</td>
-            <td>{{ review.ProductID }}</td>
+            <td>{{ review.CustomerName }}</td>
+            <td>{{ review.ProductName }}</td>
 
             {# DELETE form #}
             <form id="delete_review_form">

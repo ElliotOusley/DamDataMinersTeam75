@@ -7,10 +7,13 @@
 <table>
     <thead>
         <tr>
-            {% for key in products[0].keys() %}
-            <th>{{ key }}</th>
-            {% endfor %}
-            <th></th>
+        <th>Product ID</th>
+        <th>Name</th>
+        <th>Category</th>
+        <th>Price Per Unit</th>
+        <th>Quantity</th>
+        <th>Seasonal</th>
+        <th>Supplier Name</th>
         </tr>
     </thead>
 
@@ -23,7 +26,7 @@
             <td>{{ product.PricePerUnit }}</td>
             <td>{{ product.Quantity }}</td>
             <td>{{ 'Yes' if product.IsSeasonal else 'No' }}</td>
-            <td>{{ product.SupplierID }}</td>
+            <td>{{ product.SupplierName }}</td>
 
             {# DELETE form #}
             <form id="delete_product_form">

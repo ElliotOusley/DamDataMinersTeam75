@@ -7,10 +7,11 @@
 <table>
     <thead>
         <tr>
-            {% for key in orders[0].keys() %}
-            <th>{{ key }}</th>
-            {% endfor %}
-            <th></th>
+        <th>Order ID</th>
+        <th>Order Date</th>
+        <th>Order Status</th>
+        <th>Customer Name</th>
+
         </tr>
     </thead>
 
@@ -20,7 +21,7 @@
             <td>{{ order.OrderID }}</td>
             <td>{{ order.OrderDate }}</td>
             <td>{{ order.OrderStatus }}</td>
-            <td>{{ order.CustomerID }}</td>
+            <td>{{ order.CustomerName }}</td>
 
             {# DELETE form #}
             <form id="delete_order_form">
