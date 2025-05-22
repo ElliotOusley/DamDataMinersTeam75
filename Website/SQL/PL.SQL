@@ -2,8 +2,6 @@
 -- PL.SQL
 -- This file contains PL/SQL stored procedures to RESET each table in the Sea Otter Grocery database.
 -- Authors: Hau'oli O'Brien and Elliot Ousley
--- AI Usage: I used AI to help generate the initial structure and syntax for the PL/SQL reset procedures,
--- then I customized to fit our project’s schema and requirements.
 
 DROP PROCEDURE IF EXISTS ResetCustomers;
 DROP PROCEDURE IF EXISTS ResetSuppliers;
@@ -11,6 +9,7 @@ DROP PROCEDURE IF EXISTS ResetProducts;
 DROP PROCEDURE IF EXISTS ResetOrders;
 DROP PROCEDURE IF EXISTS ResetOrderItems;
 DROP PROCEDURE IF EXISTS ResetReviews;
+DROP PROCEDURE IF EXISTS ResetAll;
 
 DELIMITER //
 
@@ -133,3 +132,17 @@ END //
 DELIMITER ;
 
 -- TODO: Create a function called resetall
+
+DELIMITER //
+
+CREATE PROCEDURE ResetAll()
+BEGIN
+    CALL ResetCustomers();
+    CALL ResetSuppliers();
+    CALL ResetProducts();
+    CALL ResetOrders();
+    CALL ResetOrderItems();
+    CALL ResetReviews();
+END //
+
+DELIMITER ;
