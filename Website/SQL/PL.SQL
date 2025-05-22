@@ -18,62 +18,75 @@ CREATE PROCEDURE ResetCustomers()
 BEGIN
     DROP TABLE IF EXISTS Customers;
     CREATE TABLE Customers (
-        customer_id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(100) NOT NULL
+        CustomerID INT NOT NULL AUTO_INCREMENT,
+        Name VARCHAR(100) NOT NULL,
+        Species VARCHAR(50) NOT NULL,
+        Address VARCHAR(100),
+        ContactEmail VARCHAR(100) NOT NULL,
+        PRIMARY KEY (CustomerID)
     );
-    INSERT INTO Customers (name, email)
-    VALUES 
-        ('Sidney SeaLion', 'sidney@example.com'),
-        ('Syrus SeaOtter', 'syrus@example.com');
+
+    INSERT INTO Customers (Name, Species, Address, ContactEmail)
+    VALUES('Sam Shell', 'Sea Otter', '1200 Kelp Forest Way', 'shells@seamail.com'),
+    ('Luna Splash', 'Harbor Seal', '234 Moonlit Tide Ln', 'lunas@seamail.com'),
+    ('Rocky Paws', 'Sea Lion', '567 Pebble Beach Blvd', 'rockyp@seamail.com');
+
 END //
 
 CREATE PROCEDURE ResetSuppliers()
 BEGIN
     DROP TABLE IF EXISTS Suppliers;
     CREATE TABLE Suppliers (
-        supplier_id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        email VARCHAR(100),
-        location VARCHAR(100)
+        SupplierID INT AUTO_INCREMENT,
+        Name VARCHAR(100) NOT NULL,
+        ContactEmail VARCHAR(100),
+        Location VARCHAR(100),
+        PRIMARY KEY (SupplierID)
     );
-    INSERT INTO Suppliers (name, email, location)
-    VALUES 
-        ('Organic Farms Co.', 'contact@organicfarms.com', 'Oregon'),
-        ('Coastal Harvest', 'info@coastalharvest.com', 'Washington');
+    INSERT INTO Suppliers (Name, ContactEmail, Location)
+    Values('Kelp Fisheries', 'contact@kelpfisheries.com', 'Kelp City'),
+    ('Crabby Co.', 'contact@crabbyco.com', 'Crab Island'),
+    ('Deep Sea Harvesters', 'contact@deepsea.com', 'Trench Town'),
+    ('Seagrass Suppliers', 'contact@seagrasssuppliers.com', 'Seagrass Flats');
+
 END //
 
 CREATE PROCEDURE ResetProducts()
 BEGIN
     DROP TABLE IF EXISTS Products;
     CREATE TABLE Products (
-        product_id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(100) NOT NULL,
-        price DECIMAL(10,2) NOT NULL,
-        quantity INT NOT NULL,
-        supplier_id INT,
-        FOREIGN KEY (supplier_id) REFERENCES Suppliers(supplier_id)
+        ProductID INT NOT NULL AUTO_INCREMENT,
+        Name VARCHAR(100) NOT NULL,
+        Category VARCHAR(50) NOT NULL,
+        PricePerUnit DECIMAL NOT NULL,
+        Quantity INT NOT NULL,
+        IsSeasonal TINYINT NOT NULL DEFAULT 0,
+        SupplierID INT NOT NULL,
+        PRIMARY KEY (ProductID),
+        FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID)
     );
-    INSERT INTO Products (name, price, quantity, supplier_id)
-    VALUES 
-        ('Seaweed Snacks', 2.50, 100, 1),
-        ('Fresh Salmon', 12.00, 50, 2);
+    INSERT INTO Products (Name, Category, PricePerUnit, Quantity, SupplierID)
+    VALUES('Cod Roe', 'Roe', 1.50, 1500, (SELECT SupplierID FROM Suppliers WHERE Name = 'Kelp Fisheries')),
+    ('Rockfish Fillet', 'Fish', 4.25, 800, (SELECT SupplierID FROM Suppliers WHERE Name = 'Deep Sea Harvesters')),
+    ('Crab Claws', 'Shellfish', 6.75, 600, (SELECT SupplierID FROM Suppliers WHERE Name = 'Crabby Co.'));
 END //
 
 CREATE PROCEDURE ResetOrders()
 BEGIN
     DROP TABLE IF EXISTS Orders;
     CREATE TABLE Orders (
-        order_id INT AUTO_INCREMENT PRIMARY KEY,
-        customer_id INT,
-        order_date DATE,
-        status VARCHAR(50),
-        FOREIGN KEY (customer_id) REFERENCES Customers(customer_id)
+        OrderID INT NOT NULL AUTO_INCREMENT,
+        OrderDate DATE NOT NULL,
+        OrderStatus ENUM('pending', 'shipped', 'delivered', 'cancelled') NOT NULL,
+        CustomerID INT NOT NULL,
+        PRIMARY KEY (OrderID),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
     );
-    INSERT INTO Orders (customer_id, order_date, status)
-    VALUES 
-        (1, '2025-05-01', 'Delivered'),
-        (2, '2025-05-02', 'Pending');
+    INSERT INTO Orders (OrderDate, OrderStatus, CustomerID)
+    VALUES ('2025-04-25', 'pending', (SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell')),
+    ('2025-03-15', 'shipped', (SELECT CustomerID FROM Customers WHERE Name = 'Luna Splash')),
+    ('2025-05-01', 'delivered', (SELECT CustomerID FROM Customers WHERE Name = 'Rocky Paws'));
+
 END //
 
 CREATE PROCEDURE ResetOrderItems()
@@ -88,29 +101,35 @@ BEGIN
         FOREIGN KEY (order_id) REFERENCES Orders(order_id),
         FOREIGN KEY (product_id) REFERENCES Products(product_id)
     );
-    INSERT INTO OrderItems (order_id, product_id, quantity, price)
-    VALUES 
-        (1, 1, 2, 5.00),
-        (2, 2, 1, 12.00);
+    INSERT INTO OrderItems (ProductID, OrderID, Quantity, Price)
+    VALUES ((SELECT ProductID FROM Products WHERE Name = 'Cod Roe'), 
+    (SELECT OrderID FROM Orders WHERE CustomerID = (SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell')), 3, 4.50),
+    ((SELECT ProductID FROM Products WHERE Name = 'Rockfish Fillet'),
+    (SELECT OrderID FROM Orders WHERE CustomerID = (SELECT CustomerID FROM Customers WHERE Name = 'Luna Splash')), 2, 8.50),
+    ((SELECT ProductID FROM Products WHERE Name = 'Crab Claws'),
+    (SELECT OrderID FROM Orders WHERE CustomerID = (SELECT CustomerID FROM Customers WHERE Name = 'Rocky Paws')), 1, 6.75);
 END //
 
 CREATE PROCEDURE ResetReviews()
 BEGIN
     DROP TABLE IF EXISTS Reviews;
     CREATE TABLE Reviews (
-        review_id INT AUTO_INCREMENT PRIMARY KEY,
-        customer_id INT,
-        product_id INT,
-        rating INT CHECK (rating BETWEEN 1 AND 5),
-        comment TEXT,
-        review_date DATE,
-        FOREIGN KEY (customer_id) REFERENCES Customers(customer_id),
-        FOREIGN KEY (product_id) REFERENCES Products(product_id)
+        OrderItemsID INT NOT NULL AUTO_INCREMENT,
+        ProductID INT NOT NULL,
+        OrderID INT NOT NULL,
+        Quantity INT,
+        Price DECIMAL(5,2) NOT NULL,
+        PRIMARY KEY (OrderItemsID),
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+        FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
     );
-    INSERT INTO Reviews (customer_id, product_id, rating, comment, review_date)
-    VALUES 
-        (1, 1, 5, 'Great seaweed snacks!', '2025-05-03'),
-        (2, 2, 4, 'Salmon was fresh but pricey.', '2025-05-04');
+    INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID)
+    VALUES ((SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell'), '2025-04-27', 5, 'Best roe I''ve ever had.', (SELECT ProductID FROM Products WHERE Name = 'Cod Roe')),
+    ((SELECT CustomerID FROM Customers WHERE Name = 'Luna Splash'), '2025-03-20', 4, 'The rockfish fillets were great!!', (SELECT ProductID FROM Products WHERE Name = 'Rockfish Fillet')),
+    ((SELECT CustomerID FROM Customers WHERE Name = 'Rocky Paws'), '2025-05-02', 3, 'Not too bad. A little salty', (SELECT ProductID FROM Products WHERE Name = 'Crab Claws'));
+
 END //
 
 DELIMITER ;
+
+-- TODO: Create a function called resetall

@@ -167,7 +167,60 @@ def reviews():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
-# CREATE ROUTES
+# CREATE ROUTES\
+## BSG PEOPLE
+@app.route("/bsg-people/create", methods=["POST"])
+def create_bsg_people():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        fname = request.form["create_person_fname"]
+        lname = request.form["create_person_lname"]
+
+        # Cleanse data - If the homeworld or age aren't numbers, make them NULL.
+        try:
+            homeworld = int(request.form["create_person_homeworld"])
+        except ValueError:
+            homeworld = None
+
+        try:
+            age = int(request.form["create_person_age"])
+        except ValueError:
+            age = None
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_CreatePerson(%s, %s, %s, %s, @new_id);"
+        cursor.execute(query1, (fname, lname, homeworld, age))
+
+        # Store ID of last inserted row
+        new_id = cursor.fetchone()[0]
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"CREATE bsg-people. ID: {new_id} Name: {fname} {lname}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/bsg-people")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+## CUSTOMERS -- TODO
 @app.route("/bsg-people/create", methods=["POST"])
 def create_bsg_people():
     try:
