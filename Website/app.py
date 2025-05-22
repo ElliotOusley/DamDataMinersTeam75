@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 import database.db_connector as db
 
 PORT = 54535
@@ -167,9 +167,7 @@ def reviews():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
-#################################
 # CREATE ROUTES
-########################
 @app.route("/bsg-people/create", methods=["POST"])
 def create_bsg_people():
     try:
@@ -205,6 +203,95 @@ def create_bsg_people():
         dbConnection.commit()  # commit the transaction
 
         print(f"CREATE bsg-people. ID: {new_id} Name: {fname} {lname}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/bsg-people")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+# UPDATE ROUTES
+@app.route("/bsg-people/update", methods=["POST"])
+def update_bsg_people():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        person_id = request.form["update_person_id"]
+
+        # Cleanse data - If the homeworld or age aren't numbers, make them NULL.
+        try:
+            homeworld = int(request.form["update_person_homeworld"])
+        except ValueError:
+            homeworld = None
+
+        try:
+            age = int(request.form["update_person_age"])
+        except ValueError:
+            age = None
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_UpdatePerson(%s, %s, %s);"
+        cursor.execute(query1, (person_id, homeworld, age))
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        query2 = "SELECT fname, lname FROM bsg_people WHERE id = %s;"
+        cursor.execute(query2, (person_id,))
+        rows = cursor.fetchone()  # Fetch name info on updated person
+
+        print(f"UPDATE bsg-people. ID: {person_id} Name: {rows[0]} {rows[1]}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/bsg-people")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+# DELETE ROUTES
+@app.route("/bsg-people/delete", methods=["POST"])
+def delete_bsg_people():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        person_id = request.form["delete_person_id"]
+        person_name = request.form["delete_person_name"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_DeletePerson(%s);"
+        cursor.execute(query1, (person_id,))
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"DELETE bsg-people. ID: {person_id} Name: {person_name}")
 
         # Redirect the user to the updated webpage
         return redirect("/bsg-people")

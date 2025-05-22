@@ -26,7 +26,7 @@
             <td>{{ person.age | default('', true) }}</td>
 
             {# DELETE form #}
-            <form id="delete_person_form">
+            <form id="delete_person_form" method="POST" action="/bsg-people/delete">
                 <input type="hidden" name="delete_person_id" value="{{ person.id }}">
                 <input type="hidden" name="delete_person_name" value="{{ person.fname }} {{ person.lname }}">
                 <td>
@@ -70,7 +70,7 @@
 
 {# UPDATE form #}
 <h2>Update a Person</h2>
-<form class="cuForm" id="update_person_form">
+<form class="cuForm" id="update_person_form" method="POST" action="/bsg-people/update">
     <label for="update_person_id">Person to Update: </label>
     <select name="update_person_id" id="update_person_id" required>
         <option value="" disabled selected>Select a Person</option>
