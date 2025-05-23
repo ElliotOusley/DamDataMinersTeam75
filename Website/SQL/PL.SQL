@@ -92,13 +92,14 @@ CREATE PROCEDURE ResetOrderItems()
 BEGIN
     DROP TABLE IF EXISTS OrderItems;
     CREATE TABLE OrderItems (
-        order_item_id INT AUTO_INCREMENT PRIMARY KEY,
-        order_id INT,
-        product_id INT,
-        quantity INT,
-        price DECIMAL(10,2),
-        FOREIGN KEY (order_id) REFERENCES Orders(order_id),
-        FOREIGN KEY (product_id) REFERENCES Products(product_id)
+        OrderItemsID INT NOT NULL AUTO_INCREMENT,
+        ProductID INT NOT NULL,
+        OrderID INT NOT NULL,
+        Quantity INT,
+        Price DECIMAL(5,2) NOT NULL,
+        PRIMARY KEY (OrderItemsID),
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+        FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
     );
     INSERT INTO OrderItems (ProductID, OrderID, Quantity, Price)
     VALUES ((SELECT ProductID FROM Products WHERE Name = 'Cod Roe'), 
@@ -113,14 +114,15 @@ CREATE PROCEDURE ResetReviews()
 BEGIN
     DROP TABLE IF EXISTS Reviews;
     CREATE TABLE Reviews (
-        OrderItemsID INT NOT NULL AUTO_INCREMENT,
+        ReviewID INT NOT NULL AUTO_INCREMENT,
+        CustomerID INT NOT NULL,
+        ReviewDate DATE NOT NULL,
+        Rating INT NOT NULL,
+        Comment LONGTEXT,
         ProductID INT NOT NULL,
-        OrderID INT NOT NULL,
-        Quantity INT,
-        Price DECIMAL(5,2) NOT NULL,
-        PRIMARY KEY (OrderItemsID),
-        FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
-        FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+        PRIMARY KEY (ReviewID),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
     );
     INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID)
     VALUES ((SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell'), '2025-04-27', 5, 'Best roe I''ve ever had.', (SELECT ProductID FROM Products WHERE Name = 'Cod Roe')),
@@ -131,12 +133,12 @@ END //
 
 DELIMITER ;
 
--- TODO: Create a function called resetall
 
 DELIMITER //
 
 CREATE PROCEDURE ResetAll()
 BEGIN
+    SET foreign_key_checks = 0; 
     CALL ResetCustomers();
     CALL ResetSuppliers();
     CALL ResetProducts();

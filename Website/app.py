@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, url_for
 import database.db_connector as db
 
 PORT = 54535
@@ -167,6 +167,30 @@ def reviews():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+@app.route("/home/reset", methods=["POST"])
+def reset_data():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        query1 = "CALL ResetAll();"
+
+        cursor.execute(query1)
+
+        cursor.nextset()
+
+        dbConnection.commit()
+
+        print(f"Database successfully reset")
+
+        return redirect(url_for("home"))
+
+    except Exception as e:
+        print(f"Error occured when attempting reset", 500)
+    finally:
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
 
 ## CUSTOMERS
 @app.route("/customers/create", methods=["POST"])
@@ -292,6 +316,11 @@ def delete_customers():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+
+
+
+
+
 
 
 if __name__ == "__main__":
