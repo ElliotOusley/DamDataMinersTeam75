@@ -1,6 +1,21 @@
 from flask import Flask, render_template, request, redirect, url_for
 import database.db_connector as db
 
+# Citation for the following code:
+# Date: 5/22/25
+# Adapted From Exploration - Web Application Technology
+# Used to set up website
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
+
+# Citation for the following code:
+# Date: 5/22/25
+# Adapted From Exploration - Implementing CUD operations in your app
+# Used to set up website
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
+
+
+
+
 PORT = 54535
 app = Flask(__name__)
 
@@ -265,6 +280,8 @@ def update_customers():
 
         # Consume the result set (if any) before running the next query
         cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
 
         # Redirect the user to the updated webpage
         return redirect("/customers")
