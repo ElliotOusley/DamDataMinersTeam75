@@ -2,7 +2,7 @@
 -- Author: Elliot Ousley
 -- Author: Hau'oli O'Brien
 
-
+SET FOREIGN_KEY_CHECKS=0;
 
 -- Creating Tables --
 CREATE OR REPLACE TABLE Customers (
@@ -36,6 +36,7 @@ CREATE OR REPLACE TABLE Products (
   SupplierID INT NOT NULL,
   PRIMARY KEY (ProductID),
   FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID)
+    ON DELETE CASCADE
 );
 
 
@@ -47,6 +48,7 @@ CREATE OR REPLACE TABLE Orders (
   CustomerID INT NOT NULL,
   PRIMARY KEY (OrderID),
   FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    ON DELETE CASCADE
 );
 
 
@@ -58,8 +60,10 @@ CREATE OR REPLACE TABLE OrderItems (
   Quantity INT,
   Price DECIMAL(5,2) NOT NULL,
   PRIMARY KEY (OrderItemsID),
-  FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+  FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+    ON DELETE CASCADE,
   FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+    ON DELETE CASCADE
 );
 
 
@@ -72,8 +76,10 @@ CREATE OR REPLACE TABLE Reviews (
   Comment LONGTEXT,
   ProductID INT NOT NULL,
   PRIMARY KEY (ReviewID),
-  FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+  FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+    ON DELETE CASCADE,
   FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+    ON DELETE CASCADE
 );
 
 
@@ -122,3 +128,6 @@ INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID)
 VALUES ((SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell'), '2025-04-27', 5, 'Best roe I''ve ever had.', (SELECT ProductID FROM Products WHERE Name = 'Cod Roe')),
 ((SELECT CustomerID FROM Customers WHERE Name = 'Luna Splash'), '2025-03-20', 4, 'The rockfish fillets were great!!', (SELECT ProductID FROM Products WHERE Name = 'Rockfish Fillet')),
 ((SELECT CustomerID FROM Customers WHERE Name = 'Rocky Paws'), '2025-05-02', 3, 'Not too bad. A little salty', (SELECT ProductID FROM Products WHERE Name = 'Crab Claws'));
+
+
+SET FOREIGN_KEY_CHECKS=1;

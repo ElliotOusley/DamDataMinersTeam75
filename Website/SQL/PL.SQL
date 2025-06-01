@@ -63,6 +63,7 @@ BEGIN
         SupplierID INT NOT NULL,
         PRIMARY KEY (ProductID),
         FOREIGN KEY (SupplierID) REFERENCES Suppliers(SupplierID)
+            ON DELETE CASCADE
     );
     INSERT INTO Products (Name, Category, PricePerUnit, Quantity, SupplierID)
     VALUES('Cod Roe', 'Roe', 1.50, 1500, (SELECT SupplierID FROM Suppliers WHERE Name = 'Kelp Fisheries')),
@@ -80,6 +81,7 @@ BEGIN
         CustomerID INT NOT NULL,
         PRIMARY KEY (OrderID),
         FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+            ON DELETE CASCADE
     );
     INSERT INTO Orders (OrderDate, OrderStatus, CustomerID)
     VALUES ('2025-04-25', 'pending', (SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell')),
@@ -98,8 +100,10 @@ BEGIN
         Quantity INT,
         Price DECIMAL(5,2) NOT NULL,
         PRIMARY KEY (OrderItemsID),
-        FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+        FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+            ON DELETE CASCADE,
         FOREIGN KEY (OrderID) REFERENCES Orders(OrderID)
+            ON DELETE CASCADE
     );
     INSERT INTO OrderItems (ProductID, OrderID, Quantity, Price)
     VALUES ((SELECT ProductID FROM Products WHERE Name = 'Cod Roe'), 
@@ -121,8 +125,10 @@ BEGIN
         Comment LONGTEXT,
         ProductID INT NOT NULL,
         PRIMARY KEY (ReviewID),
-        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID),
+        FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+            ON DELETE CASCADE,
         FOREIGN KEY (ProductID) REFERENCES Products(ProductID)
+            ON DELETE CASCADE
     );
     INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID)
     VALUES ((SELECT CustomerID FROM Customers WHERE Name = 'Sam Shell'), '2025-04-27', 5, 'Best roe I''ve ever had.', (SELECT ProductID FROM Products WHERE Name = 'Cod Roe')),
@@ -178,6 +184,32 @@ END //
 DELIMITER ;
 
 -- #############################
+-- CREATE supplier
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateSupplier;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateSupplier(
+    IN p_name VARCHAR(100), 
+    IN p_email VARCHAR(100), 
+    IN p_location VARCHAR(100),
+    OUT p_id INT)
+BEGIN
+    INSERT INTO Customers (Name, ContactEmail, Location) 
+    VALUES (p_name, p_email, p_location);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted person.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+    -- Example of how to get the ID of the newly created person:
+        -- CALL sp_CreatePerson('Theresa', 'Evans', 2, 48, @new_id);
+        -- SELECT @new_id AS 'New Person ID';
+END //
+DELIMITER ;
+
+-- #############################
 -- UPDATE Customers
 -- #############################
 DROP PROCEDURE IF EXISTS sp_UpdateCustomer;
@@ -190,6 +222,22 @@ CREATE PROCEDURE sp_UpdateCustomer(
 
 BEGIN
     UPDATE Customers SET Address = p_address, ContactEmail = p_contactemail WHERE CustomerID = p_id; 
+END //
+DELIMITER ;
+
+-- #############################
+-- UPDATE Supplier
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateSupplier;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateSupplier(
+    IN p_id INT, 
+    IN p_contactemail VARCHAR(100), 
+    IN p_location VARCHAR(100))
+
+BEGIN
+    UPDATE Suppliers SET ContactEmail = p_contactemail, Location = p_location WHERE SupplierID = p_id; 
 END //
 DELIMITER ;
 
@@ -221,6 +269,46 @@ BEGIN
         DELETE FROM Orders WHERE CustomerID = p_id;
         DELETE FROM Reviews WHERE CustomerID = p_id;
         DELETE FROM Customers WHERE CustomerID = p_id;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in bsg_people for id: ', p_id);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
+
+-- #############################
+-- DELETE Supplier
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteSupplier;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteSupplier(IN p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255); 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both bsg_people table and 
+        --      intersection table to prevent a data anamoly
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the bsg_cert_people table.
+        DELETE FROM Products WHERE SupplierID = p_id;
+        DELETE FROM Suppliers WHERE SupplierID = p_id;
 
         -- ROW_COUNT() returns the number of rows affected by the preceding statement.
         IF ROW_COUNT() = 0 THEN

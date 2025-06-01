@@ -206,7 +206,7 @@ def reset_data():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
-
+## CREATE ROUTES
 ## CUSTOMERS
 @app.route("/customers/create", methods=["POST"])
 def create_customers():
@@ -256,7 +256,50 @@ def create_customers():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+## SUPPLIERS
+@app.route("/suppliers/create", methods=["POST"])
+def create_suppliers():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        name = request.form["create_supplier_name"]
+        contactemail = request.form["create_supplier_email"]
+        location = request.form["create_supplier_location"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_CreateSupplier(%s, %s, %s, @new_id);"
+        cursor.execute(query1, (name, contactemail, location))
+
+        # Store ID of last inserted row
+        new_id = cursor.fetchone()[0]
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"CREATE Supplier. ID: {new_id} Name: {name} Email: {contactemail}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/suppliers")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
 # UPDATE ROUTES
+## CUSTOMERS
 @app.route("/customers/update", methods=["POST"])
 def update_customers():
     try:
@@ -299,7 +342,46 @@ def update_customers():
             dbConnection.close()
 
 
+## SUPPLIERS
+@app.route("/suppliers/update", methods=["POST"])
+def update_suppliers():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        customer_id = request.form["update_supplier_id"]
+        contactemail = request.form["update_supplier_email"]
+        location = request.form["update_supplier_location"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_UpdateSupplier(%s, %s, %s);"
+        cursor.execute(query1, (supplier_id, contactemail, location))
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        # Redirect the user to the updated webpage
+        return redirect("/suppliers")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
 # DELETE ROUTES
+## CUSTOMERS
 @app.route("/customers/delete", methods=["POST"])
 def delete_customers():
     try:
@@ -321,6 +403,41 @@ def delete_customers():
 
         # Redirect the user to the updated webpage
         return redirect("/customers")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+## SUPPLIERS
+@app.route("/suppliers/delete", methods=["POST"])
+def delete_suppliers():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        supplier_id = request.form["delete_supplier_id"]
+        supplier_name = request.form["delete_supplier_name"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_DeleteSupplier(%s);"
+        cursor.execute(query1, (supplier_id,))
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"DELETE customer. ID: {supplier_id} Name: {supplier_name}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/suppliers")
 
     except Exception as e:
         print(f"Error executing queries: {e}")

@@ -23,7 +23,7 @@
             <td>{{ supplier.Location | default('', true) }}</td>
 
             {# DELETE form #}
-            <form id="delete_supplier_form">
+            <form id="delete_supplier_form" method="POST" action="/suppliers/delete">
                 <input type="hidden" name="delete_supplier_id" value="{{ supplier.SupplierID }}">
                 <input type="hidden" name="delete_supplier_name" value="{{ supplier.Name }}">
                 <td>
@@ -37,7 +37,7 @@
 
 {# CREATE form #}
 <h2>Create a Supplier</h2>
-<form class="cuForm" id="create_supplier_form">
+<form class="cuForm" id="create_supplier_form" method="POST" action="/suppliers/create">
     <label for="create_supplier_name">Name: </label>
     <input type="text" name="create_supplier_name" id="create_supplier_name" required>
 
@@ -52,7 +52,7 @@
 
 {# UPDATE form #}
 <h2>Update a Supplier</h2>
-<form class="cuForm" id="update_supplier_form">
+<form class="cuForm" id="update_supplier_form" method="POST" action="/suppliers/update">
     <label for="update_supplier_id">Supplier to Update: </label>
     <select name="update_supplier_id" id="update_supplier_id" required>
         <option value="" disabled selected>Select a Supplier</option>
