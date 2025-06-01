@@ -239,6 +239,88 @@ END //
 DELIMITER ;
 
 -- #############################
+-- CREATE orders
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateOrder;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateOrder(
+    IN p_date DATE, 
+    IN p_status ENUM('pending', 'shipped', 'delivered', 'cancelled'), 
+    IN p_customerid INT,
+    OUT p_id INT)
+BEGIN
+    INSERT INTO Orders (OrderDate, OrderStatus, CustomerID) 
+    VALUES (p_date, p_status, p_customerid);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted person.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+    -- Example of how to get the ID of the newly created person:
+        -- CALL sp_CreatePerson('Theresa', 'Evans', 2, 48, @new_id);
+        -- SELECT @new_id AS 'New Person ID';
+END //
+DELIMITER ;
+
+-- #############################
+-- CREATE orderitems
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateOrderitem;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateOrderitem(
+    IN p_productid INT, 
+    IN p_orderid INT, 
+    IN p_quantity INT,
+    IN p_price DECIMAL(5,2),
+    OUT p_id INT)
+BEGIN
+    INSERT INTO OrderItems (ProductID, OrderID, Quantity, Price) 
+    VALUES (p_productid, p_orderid, p_quantity, p_price);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted person.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+    -- Example of how to get the ID of the newly created person:
+        -- CALL sp_CreatePerson('Theresa', 'Evans', 2, 48, @new_id);
+        -- SELECT @new_id AS 'New Person ID';
+END //
+DELIMITER ;
+
+-- #############################
+-- CREATE reviews
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateReview;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateReview(
+    IN p_customerid INT, 
+    IN p_reviewdate DATE, 
+    IN p_rating INT,
+    IN p_comment LONGTEXT,
+    IN p_productid INT,
+    OUT p_id INT)
+BEGIN
+    INSERT INTO Reviews (CustomerID, ReviewDate, Rating, Comment, ProductID) 
+    VALUES (p_customerid, p_reviewdate, p_rating, p_comment, p_productid);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted person.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+    -- Example of how to get the ID of the newly created person:
+        -- CALL sp_CreatePerson('Theresa', 'Evans', 2, 48, @new_id);
+        -- SELECT @new_id AS 'New Person ID';
+END //
+DELIMITER ;
+
+
+-- #############################
 -- UPDATE Customers
 -- #############################
 DROP PROCEDURE IF EXISTS sp_UpdateCustomer;
