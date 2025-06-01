@@ -350,7 +350,7 @@ def update_suppliers():
         cursor = dbConnection.cursor()
 
         # Get form data
-        customer_id = request.form["update_supplier_id"]
+        supplier_id = request.form["update_supplier_id"]
         contactemail = request.form["update_supplier_email"]
         location = request.form["update_supplier_location"]
 

@@ -195,7 +195,7 @@ CREATE PROCEDURE sp_CreateSupplier(
     IN p_location VARCHAR(100),
     OUT p_id INT)
 BEGIN
-    INSERT INTO Customers (Name, ContactEmail, Location) 
+    INSERT INTO Suppliers (Name, ContactEmail, Location) 
     VALUES (p_name, p_email, p_location);
 
     -- Store the ID of the last inserted row
