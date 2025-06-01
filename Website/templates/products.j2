@@ -29,7 +29,7 @@
             <td>{{ product.SupplierName }}</td>
 
             {# DELETE form #}
-            <form id="delete_product_form">
+            <form id="delete_product_form" method="POST" action="/products/delete">
                 <input type="hidden" name="delete_product_id" value="{{ product.ProductID }}">
                 <input type="hidden" name="delete_product_name" value="{{ product.Name }}">
                 <td>
@@ -43,7 +43,7 @@
 
 {# CREATE form #}
 <h2>Create a Product</h2>
-<form class="cuForm" id="create_product_form">
+<form class="cuForm" id="create_product_form" method="POST" action="/products/create">
     <label for="create_product_name">Name: </label>
     <input type="text" name="create_product_name" id="create_product_name" required>
 
@@ -72,7 +72,7 @@
 
 {# UPDATE form #}
 <h2>Update a Product</h2>
-<form class="cuForm" id="update_product_form">
+<form class="cuForm" id="update_product_form" method="POST" action="/products/update">
     <label for="update_product_id">Product to Update: </label>
     <select name="update_product_id" id="update_product_id" required>
         <option value="" disabled selected>Select a Product</option>

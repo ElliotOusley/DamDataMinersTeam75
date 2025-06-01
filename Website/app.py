@@ -91,6 +91,8 @@ def products():
             JOIN Suppliers ON Products.SupplierID = Suppliers.SupplierID;
         """
         products_data = db.query(dbConnection, query).fetchall()
+
+        
         return render_template("products.j2", products=products_data)
     except Exception as e:
         print(f"Error occurred with database queries", 500)
@@ -298,6 +300,53 @@ def create_suppliers():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+## PRODUCTS
+@app.route("/products/create", methods=["POST"])
+def create_products():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        name = request.form["create_product_name"]
+        category = request.form["create_product_category"]
+        ppu = request.form["create_product_price"]
+        quantity = request.form["create_product_quantity"]
+        seasonal = request.form["create_product_isseasonal"]
+        supplier = request.form["create_product_supplier"]
+
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_CreateProduct(%s, %s, %s, %s, %s, %s, @new_id);"
+        cursor.execute(query1, (name, category, ppu, quantity, seasonal, supplier))
+
+        # Store ID of last inserted row
+        new_id = cursor.fetchone()[0]
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"CREATE Product. ID: {new_id} Name: {name} Category: {category}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/products")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
 # UPDATE ROUTES
 ## CUSTOMERS
 @app.route("/customers/update", methods=["POST"])
@@ -380,6 +429,47 @@ def update_suppliers():
             dbConnection.close()
 
 
+## PRODUCT
+@app.route("/products/update", methods=["POST"])
+def update_products():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        product_id = request.form["update_product_id"]
+        ppu = request.form["update_product_price"]
+        quantity = request.form["update_product_quantity"]
+        seasonal = request.form["update_product_isseasonal"]
+        supplier_id = request.form["update_product_supplier"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_UpdateProduct(%s, %s, %s, %s, %s);"
+        cursor.execute(query1, (product_id, ppu, quantity, seasonal, supplier_id))
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        # Redirect the user to the updated webpage
+        return redirect("/products")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+
 # DELETE ROUTES
 ## CUSTOMERS
 @app.route("/customers/delete", methods=["POST"])
@@ -394,7 +484,7 @@ def delete_customers():
 
         # Create and execute our queries
         # Using parameterized queries (Prevents SQL injection attacks)
-        query1 = "CALL sp_DeleteCustomer(%s);"
+        query1 = "CALL sp_DeleteProduct(%s);"
         cursor.execute(query1, (customer_id,))
 
         dbConnection.commit()  # commit the transaction
@@ -452,6 +542,40 @@ def delete_suppliers():
             dbConnection.close()
 
 
+## PRODUCTS
+@app.route("/products/delete", methods=["POST"])
+def delete_products():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        product_id = request.form["delete_product_id"]
+        product_name = request.form["delete_product_name"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_DeleteProduct(%s);"
+        cursor.execute(query1, (product_id,))
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"DELETE customer. ID: {product_id} Name: {product_name}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/products")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 
 

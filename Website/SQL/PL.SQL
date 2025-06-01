@@ -210,6 +210,35 @@ END //
 DELIMITER ;
 
 -- #############################
+-- CREATE product
+-- #############################
+DROP PROCEDURE IF EXISTS sp_CreateProduct;
+
+DELIMITER //
+CREATE PROCEDURE sp_CreateProduct(
+    IN p_name VARCHAR(100), 
+    IN p_category VARCHAR(50), 
+    IN p_price DECIMAL, 
+    IN p_quantity INT,
+    IN p_isseasonal TINYINT,
+    IN p_supplierid INT,
+    OUT p_id INT)
+BEGIN
+    INSERT INTO Product (Name, Category, PricePerUnit, Quantity, IsSeasonal, SupplierID) 
+    VALUES (p_name, p_category, p_price, p_quantity, p_isseasonal, p_supplierid);
+
+    -- Store the ID of the last inserted row
+    SELECT LAST_INSERT_ID() into p_id;
+    -- Display the ID of the last inserted person.
+    SELECT LAST_INSERT_ID() AS 'new_id';
+
+    -- Example of how to get the ID of the newly created person:
+        -- CALL sp_CreatePerson('Theresa', 'Evans', 2, 48, @new_id);
+        -- SELECT @new_id AS 'New Person ID';
+END //
+DELIMITER ;
+
+-- #############################
 -- UPDATE Customers
 -- #############################
 DROP PROCEDURE IF EXISTS sp_UpdateCustomer;
@@ -238,6 +267,25 @@ CREATE PROCEDURE sp_UpdateSupplier(
 
 BEGIN
     UPDATE Suppliers SET ContactEmail = p_contactemail, Location = p_location WHERE SupplierID = p_id; 
+END //
+DELIMITER ;
+
+
+-- #############################
+-- UPDATE Product
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateProduct;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateProduct(
+    IN p_id INT, 
+    IN p_price DECIMAL, 
+    IN p_quantity INT,
+    IN p_seasonal TINYINT,
+    IN p_supplierid INT)
+
+BEGIN
+    UPDATE Product SET PricePerUnit = p_price, Quantity = p_quantity, IsSeasonal = p_seasonal, SupplierID = p_supplierid WHERE ProductID = p_id; 
 END //
 DELIMITER ;
 
@@ -321,3 +369,44 @@ BEGIN
 
 END //
 DELIMITER ;
+
+-- #############################
+-- DELETE Product
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteProduct;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteProduct(IN p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255); 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both bsg_people table and 
+        --      intersection table to prevent a data anamoly
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the bsg_cert_people table.
+        DELETE FROM OrdersItems WHERE ProductID = p_id;
+        DELETE FROM Reviews WHERE ProductID = p_id;
+        DELETE FROM Products WHERE ProductID = p_id;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in bsg_people for id: ', p_id);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
