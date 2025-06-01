@@ -27,7 +27,7 @@
             <td>{{ review.ProductName }}</td>
 
             {# DELETE form #}
-            <form id="delete_review_form">
+            <form id="delete_review_form" method="POST" action="/reviews/delete">
                 <input type="hidden" name="delete_review_id" value="{{ review.ReviewID }}">
                 <td>
                     <button type="submit">Delete</button>
@@ -40,7 +40,7 @@
 
 {# CREATE form #}
 <h2>Create a Review</h2>
-<form class="cuForm" id="create_review_form">
+<form class="cuForm" id="create_review_form" method="POST" action="/reviews/create">
     <label for="create_review_customer">Customer: </label>
     <select name="create_review_customer" id="create_review_customer" required>
         <option value="" disabled selected>Select a Customer</option>
@@ -71,7 +71,7 @@
 
 {# UPDATE form #}
 <h2>Update a Review</h2>
-<form class="cuForm" id="update_review_form">
+<form class="cuForm" id="update_review_form" method="POST" action="/reviews/update">
     <label for="update_review_id">Review to Update: </label>
     <select name="update_review_id" id="update_review_id" required>
         <option value="" disabled selected>Select a Review</option>

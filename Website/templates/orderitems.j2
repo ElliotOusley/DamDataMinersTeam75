@@ -26,7 +26,7 @@
             <td>{{ item.Price }}</td>
 
             {# DELETE form #}
-            <form id="delete_orderitem_form">
+            <form id="delete_orderitem_form" method="POST" action="/orderitems/delete">
                 <input type="hidden" name="delete_orderitem_id" value="{{ item.OrderItemsID }}">
                 <td>
                     <button type="submit">Delete</button>
@@ -39,7 +39,7 @@
 
 {# CREATE form #}
 <h2>Create an Order Item</h2>
-<form class="cuForm" id="create_orderitem_form">
+<form class="cuForm" id="create_orderitem_form" method="POST" action="/orderitems/create">
     <label for="create_orderitem_product">Product: </label>
     <select name="create_orderitem_product" id="create_orderitem_product" required>
         <option value="" disabled selected>Select a Product</option>
@@ -67,7 +67,7 @@
 
 {# UPDATE form #}
 <h2>Update an Order Item</h2>
-<form class="cuForm" id="update_orderitem_form">
+<form class="cuForm" id="update_orderitem_form" method="POST" action="/orderitems/update">
     <label for="update_orderitem_id">Order Item to Update: </label>
     <select name="update_orderitem_id" id="update_orderitem_id" required>
         <option value="" disabled selected>Select an Order Item</option>

@@ -24,7 +24,7 @@
             <td>{{ order.CustomerName }}</td>
 
             {# DELETE form #}
-            <form id="delete_order_form">
+            <form id="delete_order_form" method="POST" action="/orders/delete">
                 <input type="hidden" name="delete_order_id" value="{{ order.OrderID }}">
                 <td>
                     <button type="submit">Delete</button>
@@ -37,7 +37,7 @@
 
 {# CREATE form #}
 <h2>Create an Order</h2>
-<form class="cuForm" id="create_order_form">
+<form class="cuForm" id="create_order_form"  method="POST" action="/orders/create">
     <label for="create_order_date">Order Date: </label>
     <input type="date" name="create_order_date" id="create_order_date" required>
 
@@ -63,7 +63,7 @@
 
 {# UPDATE form #}
 <h2>Update an Order</h2>
-<form class="cuForm" id="update_order_form">
+<form class="cuForm" id="update_order_form" method="POST" action="/orders/update">
     <label for="update_order_id">Order to Update: </label>
     <select name="update_order_id" id="update_order_id" required>
         <option value="" disabled selected>Select an Order</option>
