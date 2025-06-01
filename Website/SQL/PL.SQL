@@ -367,10 +367,57 @@ CREATE PROCEDURE sp_UpdateProduct(
     IN p_supplierid INT)
 
 BEGIN
-    UPDATE Product SET PricePerUnit = p_price, Quantity = p_quantity, IsSeasonal = p_seasonal, SupplierID = p_supplierid WHERE ProductID = p_id; 
+    UPDATE Products SET PricePerUnit = p_price, Quantity = p_quantity, IsSeasonal = p_seasonal, SupplierID = p_supplierid WHERE ProductID = p_id; 
 END //
 DELIMITER ;
 
+-- #############################
+-- UPDATE Order
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateOrder;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateOrder(
+    IN p_id INT, 
+    IN p_status ENUM('pending', 'shipped', 'delivered', 'cancelled'), 
+    IN p_customerid INT)
+
+BEGIN
+    UPDATE Orders SET Status = p_status, CustomerID = p_customerid WHERE OrderID = p_id; 
+END //
+DELIMITER ;
+
+-- #############################
+-- UPDATE Orderitem
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateOrderitem;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateOrderitem(
+    IN p_id INT, 
+    IN p_quantity INT, 
+    IN p_price DECIMAL(5,2))
+
+BEGIN
+    UPDATE OrderItems SET Quantity = p_quantity, Price = p_price WHERE OrderItemsID = p_id; 
+END //
+DELIMITER ;
+
+-- #############################
+-- UPDATE Review
+-- #############################
+DROP PROCEDURE IF EXISTS sp_UpdateOrderitem;
+
+DELIMITER //
+CREATE PROCEDURE sp_UpdateOrderitem(
+    IN p_id INT, 
+    IN p_rating INT, 
+    IN p_comment LONGTEXT)
+
+BEGIN
+    UPDATE Reviews SET Rating = p_rating, Comment = p_comment WHERE ReviewID = p_id; 
+END //
+DELIMITER ;
 
 -- #############################
 -- DELETE Customers
@@ -492,3 +539,117 @@ BEGIN
 END //
 DELIMITER ;
 
+-- #############################
+-- DELETE Order
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteOrder;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteOrder(IN p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255); 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both bsg_people table and 
+        --      intersection table to prevent a data anamoly
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the bsg_cert_people table.
+        DELETE FROM OrderItems WHERE OrderID = p_id;
+        DELETE FROM Orders WHERE OrderID = p_id;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in bsg_people for id: ', p_id);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
+-- #############################
+-- DELETE OrderItem
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteOrderitem;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteOrderitem(IN p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255); 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both bsg_people table and 
+        --      intersection table to prevent a data anamoly
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the bsg_cert_people table.
+        DELETE FROM OrderItems WHERE OrderItemsID = p_id;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in bsg_people for id: ', p_id);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
+
+-- #############################
+-- DELETE Review
+-- #############################
+DROP PROCEDURE IF EXISTS sp_DeleteReview;
+
+DELIMITER //
+CREATE PROCEDURE sp_DeleteReview(IN p_id INT)
+BEGIN
+    DECLARE error_message VARCHAR(255); 
+
+    -- error handling
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+    BEGIN
+        -- Roll back the transaction on any error
+        ROLLBACK;
+        -- Propogate the custom error message to the caller
+        RESIGNAL;
+    END;
+
+    START TRANSACTION;
+        -- Deleting corresponding rows from both bsg_people table and 
+        --      intersection table to prevent a data anamoly
+        -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
+        --      inside the bsg_cert_people table.
+        DELETE FROM Reviews WHERE ReviewID = p_id;
+
+        -- ROW_COUNT() returns the number of rows affected by the preceding statement.
+        IF ROW_COUNT() = 0 THEN
+            set error_message = CONCAT('No matching record found in bsg_people for id: ', p_id);
+            -- Trigger custom error, invoke EXIT HANDLER
+            SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = error_message;
+        END IF;
+
+    COMMIT;
+
+END //
+DELIMITER ;
