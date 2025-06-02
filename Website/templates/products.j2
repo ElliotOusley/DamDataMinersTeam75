@@ -57,7 +57,9 @@
     <input type="number" name="create_product_quantity" id="create_product_quantity" min="0" required>
 
     <label for="create_product_isseasonal">Seasonal? </label>
-    <input type="checkbox" name="create_product_isseasonal" id="create_product_isseasonal">
+    <input type="hidden" name="create_product_isseasonal" value="0">
+    <input type="checkbox" name="create_product_isseasonal" id="create_product_isseasonal" value="1">
+
 
     <label for="create_product_supplier">Supplier: </label>
     <select name="create_product_supplier" id="create_product_supplier" required>
@@ -90,7 +92,9 @@
     <input type="number" name="update_product_quantity" id="update_product_quantity" min="0">
 
     <label for="update_product_isseasonal">Seasonal? </label>
-    <input type="checkbox" name="update_product_isseasonal" id="update_product_isseasonal">
+    <input type="hidden" name="update_product_isseasonal" value="0">
+    <input type="checkbox" name="update_product_isseasonal" id="update_product_isseasonal" value="1">
+
 
     <label for="update_product_supplier">Supplier: </label>
     <select name="update_product_supplier" id="update_product_supplier">

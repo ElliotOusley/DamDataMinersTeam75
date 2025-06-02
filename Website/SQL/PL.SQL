@@ -230,7 +230,7 @@ CREATE PROCEDURE sp_CreateProduct(
     IN p_supplierid INT,
     OUT p_id INT)
 BEGIN
-    INSERT INTO Product (Name, Category, PricePerUnit, Quantity, IsSeasonal, SupplierID) 
+    INSERT INTO Products (Name, Category, PricePerUnit, Quantity, IsSeasonal, SupplierID) 
     VALUES (p_name, p_category, p_price, p_quantity, p_isseasonal, p_supplierid);
 
     -- Store the ID of the last inserted row
