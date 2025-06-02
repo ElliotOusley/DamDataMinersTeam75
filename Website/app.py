@@ -91,9 +91,11 @@ def products():
             JOIN Suppliers ON Products.SupplierID = Suppliers.SupplierID;
         """
         products_data = db.query(dbConnection, query).fetchall()
-
         
-        return render_template("products.j2", products=products_data)
+        query2 = "SELECT * FROM Suppliers;"
+        suppliers_data = db.query(dbConnection, query2).fetchall()
+        
+        return render_template("products.j2", products=products_data, suppliers=suppliers_data)
     except Exception as e:
         print(f"Error occurred with database queries", 500)
     finally:
@@ -115,7 +117,11 @@ def orders():
             JOIN Customers ON Orders.CustomerID = Customers.CustomerID;
         """
         orders_data = db.query(dbConnection, query).fetchall()
-        return render_template("orders.j2", orders=orders_data)
+
+        query2 = "SELECT * FROM Customers;"
+        customers_data = db.query(dbConnection, query2).fetchall()
+
+        return render_template("orders.j2", orders=orders_data, customers=customers_data)
     except Exception as e:
         print(f"Error occurred with database queries", 500)
     finally:
@@ -140,7 +146,14 @@ def orderitems():
             JOIN Orders ON OrderItems.OrderID = Orders.OrderID;
         """
         orderitems_data = db.query(dbConnection, query).fetchall()
-        return render_template("orderitems.j2", orderitems=orderitems_data)
+
+        query2 = "SELECT * FROM Orders;"
+        orders_data = db.query(dbConnection, query2).fetchall()
+
+        query3 = "SELECT * FROM Products;"
+        products_data = db.query(dbConnection, query3).fetchall()
+
+        return render_template("orderitems.j2", orderitems=orderitems_data, orders=orders_data, products=products_data)
     except Exception as e:
         print(f"Error occurred with database queries", 500)
     finally:
@@ -177,7 +190,14 @@ def reviews():
             JOIN Products ON Reviews.ProductID = Products.ProductID;
         """
         reviews_data = db.query(dbConnection, query).fetchall()
-        return render_template("reviews.j2", reviews=reviews_data)
+
+        query2 = "SELECT * FROM Customers;"
+        customers_data = db.query(dbConnection, query2).fetchall()
+
+        query3 = "SELECT * FROM Products;"
+        products_data = db.query(dbConnection, query3).fetchall()
+
+        return render_template("reviews.j2", reviews=reviews_data, customers=customers_data, products=products_data)
     except Exception as e:
         print(f"Error occurred with database queries", 500)
     finally:
