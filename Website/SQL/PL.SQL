@@ -389,7 +389,7 @@ CREATE PROCEDURE sp_UpdateOrder(
     IN p_customerid INT)
 
 BEGIN
-    UPDATE Orders SET Status = p_status, CustomerID = p_customerid WHERE OrderID = p_id; 
+    UPDATE Orders SET OrderStatus = p_status, CustomerID = p_customerid WHERE OrderID = p_id; 
 END //
 DELIMITER ;
 
@@ -412,10 +412,10 @@ DELIMITER ;
 -- #############################
 -- UPDATE Review
 -- #############################
-DROP PROCEDURE IF EXISTS sp_UpdateOrderitem;
+DROP PROCEDURE IF EXISTS sp_UpdateReview;
 
 DELIMITER //
-CREATE PROCEDURE sp_UpdateOrderitem(
+CREATE PROCEDURE sp_UpdateReview(
     IN p_id INT, 
     IN p_rating INT, 
     IN p_comment LONGTEXT)

@@ -366,6 +366,94 @@ def create_products():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+## ORDER
+@app.route("/orders/create", methods=["POST"])
+def create_orders():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        date = request.form["create_order_date"]
+        status = request.form["create_order_status"]
+        customer_id = request.form["create_order_customer"]
+
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_CreateOrder(%s, %s, %s, @new_id);"
+        cursor.execute(query1, (date, status, customer_id))
+
+        # Store ID of last inserted row
+        new_id = cursor.fetchone()[0]
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"CREATE Order. ID: {new_id} Date: {date} Customer Id: {customer_id}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/orders")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+## ORDERITEM
+@app.route("/orderitems/create", methods=["POST"])
+def create_orderitems():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        product_id = request.form["create_orderitem_product"]
+        order_id = request.form["create_orderitem_order"]
+        quantity = request.form["create_orderitem_quantity"]
+        price = request.form["create_orderitem_price"]
+
+
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_CreateOrderitem(%s, %s, %s, %s, @new_id);"
+        cursor.execute(query1, (product_id, order_id, quantity, price))
+
+        # Store ID of last inserted row
+        new_id = cursor.fetchone()[0]
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"CREATE Order. ID: {new_id} Product ID: {product_id} Order Id: {order_id}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/orderitems")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
 
 # UPDATE ROUTES
 ## CUSTOMERS
@@ -488,7 +576,79 @@ def update_products():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+## ORDER
+@app.route("/orders/update", methods=["POST"])
+def update_orders():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
 
+        # Get form data
+        order_id = request.form["update_order_id"]
+        status = request.form["update_order_status"]
+        customer = request.form["update_order_customer"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_UpdateOrder(%s, %s, %s);"
+        cursor.execute(query1, (order_id, status, customer))
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        # Redirect the user to the updated webpage
+        return redirect("/orders")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+## ORDERItem
+@app.route("/orderitems/update", methods=["POST"])
+def update_orderitems():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        orderitem_id = request.form["update_orderitem_id"]
+        quantity = request.form["update_orderitem_quantity"]
+        price = request.form["update_orderitem_price"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_UpdateOrderitem(%s, %s, %s);"
+        cursor.execute(query1, (orderitem_id, quantity, price))
+
+        # Consume the result set (if any) before running the next query
+        cursor.nextset()  # Move to the next result set (for CALL statements)
+
+        dbConnection.commit()  # commit the transaction
+
+        # Redirect the user to the updated webpage
+        return redirect("/orderitems")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 # DELETE ROUTES
 ## CUSTOMERS
@@ -584,6 +744,76 @@ def delete_products():
 
         # Redirect the user to the updated webpage
         return redirect("/products")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists.
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+## Orders
+@app.route("/orders/delete", methods=["POST"])
+def delete_orders():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        order_id = request.form["delete_order_id"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_DeleteOrder(%s);"
+        cursor.execute(query1, (order_id,))
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"DELETE customer. ID: {order_id}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/orders")
+
+    except Exception as e:
+        print(f"Error executing queries: {e}")
+        return (
+            "An error occurred while executing the database queries.",
+            500,
+        )
+
+    finally:
+        # Close the DB connection, if it exists.
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
+## Orderitems
+@app.route("/orderitems/delete", methods=["POST"])
+def delete_orderitems():
+    try:
+        dbConnection = db.connectDB()  # Open our database connection
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        orderitem_id = request.form["delete_orderitem_id"]
+
+        # Create and execute our queries
+        # Using parameterized queries (Prevents SQL injection attacks)
+        query1 = "CALL sp_DeleteOrderitem(%s);"
+        cursor.execute(query1, (orderitem_id,))
+
+        dbConnection.commit()  # commit the transaction
+
+        print(f"DELETE orderitem ID: {orderitem_id}")
+
+        # Redirect the user to the updated webpage
+        return redirect("/orderitems")
 
     except Exception as e:
         print(f"Error executing queries: {e}")
