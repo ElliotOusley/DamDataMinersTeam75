@@ -504,7 +504,7 @@ def delete_customers():
 
         # Create and execute our queries
         # Using parameterized queries (Prevents SQL injection attacks)
-        query1 = "CALL sp_DeleteProduct(%s);"
+        query1 = "CALL sp_DeleteCustomer(%s);"
         cursor.execute(query1, (customer_id,))
 
         dbConnection.commit()  # commit the transaction

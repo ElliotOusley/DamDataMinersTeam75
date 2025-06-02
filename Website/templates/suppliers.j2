@@ -23,6 +23,7 @@
             <td>{{ supplier.Location | default('', true) }}</td>
 
             {# DELETE form #}
+            <td>
             <form id="delete_supplier_form" method="POST" action="/suppliers/delete">
                 <input type="hidden" name="delete_supplier_id" value="{{ supplier.SupplierID }}">
                 <input type="hidden" name="delete_supplier_name" value="{{ supplier.Name }}">
@@ -30,6 +31,7 @@
                     <button type="submit">Delete</button>
                 </td>
             </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

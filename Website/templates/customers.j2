@@ -24,6 +24,7 @@
             <td>{{ customer.ContactEmail | default('', true) }}</td>
 
             {# DELETE form #}
+            <td>
             <form id="delete_customer_form" method="POST" action="/customers/delete">
                 <input type="hidden" name="delete_customer_id" value="{{ customer.CustomerID }}">
                 <input type="hidden" name="delete_customer_name" value="{{ customer.Name }}">
@@ -31,6 +32,7 @@
                     <button type="submit">Delete</button>
                 </td>
             </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>

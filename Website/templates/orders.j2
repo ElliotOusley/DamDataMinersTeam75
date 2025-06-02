@@ -24,12 +24,14 @@
             <td>{{ order.CustomerName }}</td>
 
             {# DELETE form #}
+            <td>
             <form id="delete_order_form" method="POST" action="/orders/delete">
                 <input type="hidden" name="delete_order_id" value="{{ order.OrderID }}">
                 <td>
                     <button type="submit">Delete</button>
                 </td>
             </form>
+            </td>
         </tr>
         {% endfor %}
     </tbody>
