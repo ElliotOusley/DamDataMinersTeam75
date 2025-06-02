@@ -529,7 +529,7 @@ BEGIN
         --      intersection table to prevent a data anamoly
         -- This can also be accomplished by using an 'ON DELETE CASCADE' constraint
         --      inside the bsg_cert_people table.
-        DELETE FROM OrdersItems WHERE ProductID = p_id;
+        DELETE FROM OrderItems WHERE ProductID = p_id;
         DELETE FROM Reviews WHERE ProductID = p_id;
         DELETE FROM Products WHERE ProductID = p_id;
 

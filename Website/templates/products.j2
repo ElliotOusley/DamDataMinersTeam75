@@ -33,9 +33,7 @@
             <form id="delete_product_form" method="POST" action="/products/delete">
                 <input type="hidden" name="delete_product_id" value="{{ product.ProductID }}">
                 <input type="hidden" name="delete_product_name" value="{{ product.Name }}">
-                <td>
-                    <button type="submit">Delete</button>
-                </td>
+                <button type="submit">Delete</button>
             </form>
             </td>
         </tr>
