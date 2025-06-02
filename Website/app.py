@@ -593,7 +593,7 @@ def delete_products():
         )
 
     finally:
-        # Close the DB connection, if it exists
+        # Close the DB connection, if it exists.
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
