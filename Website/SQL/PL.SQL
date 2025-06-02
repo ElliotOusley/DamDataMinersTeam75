@@ -3,6 +3,12 @@
 -- This file contains PL/SQL stored procedures to RESET each table in the Sea Otter Grocery database.
 -- Authors: Hau'oli O'Brien and Elliot Ousley
 
+-- Citation for the following code:
+-- Date: 5/22/25
+-- Adapted From Exploration - Implementing CUD operations in your app
+-- Used to create stored procedures
+-- Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-implementing-cud-operations-in-your-app?module_item_id=25352968
+
 DROP PROCEDURE IF EXISTS ResetCustomers;
 DROP PROCEDURE IF EXISTS ResetSuppliers;
 DROP PROCEDURE IF EXISTS ResetProducts;
