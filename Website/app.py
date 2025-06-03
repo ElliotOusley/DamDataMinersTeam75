@@ -469,7 +469,7 @@ def create_reviews():
         product_id = request.form["create_review_product"]
 
         query = "CALL sp_CreateReview(%s, %s, %s, %s, %s, @new_id);"
-        cursor.execute(query, (review_date, rating, comment, customer_id, product_id))
+        cursor.execute(query, (customer_id, review_date, rating, comment, product_id))
 
         new_id = cursor.fetchone()[0]
         cursor.nextset()
