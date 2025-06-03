@@ -453,6 +453,38 @@ def create_orderitems():
         # Close the DB connection, if it exists
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+            
+## REVIEWS
+@app.route("/reviews/create", methods=["POST"])
+def create_reviews():
+    try:
+        dbConnection = db.connectDB()
+        cursor = dbConnection.cursor()
+
+        # Get form data
+        review_date = request.form["create_review_date"]
+        rating = request.form["create_review_rating"]
+        comment = request.form["create_review_comment"]
+        customer_id = request.form["create_review_customer"]
+        product_id = request.form["create_review_product"]
+
+        query = "CALL sp_CreateReview(%s, %s, %s, %s, %s, @new_id);"
+        cursor.execute(query, (review_date, rating, comment, customer_id, product_id))
+
+        new_id = cursor.fetchone()[0]
+        cursor.nextset()
+        dbConnection.commit()
+
+        print(f"CREATE Review. ID: {new_id} Rating: {rating} Product: {product_id}")
+
+        return redirect("/reviews")
+
+    except Exception as e:
+        print(f"Error executing create_reviews: {e}")
+        return "An error occurred.", 500
+    finally:
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 
 # UPDATE ROUTES
@@ -650,6 +682,33 @@ def update_orderitems():
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
 
+## REVIEWS
+@app.route("/reviews/update", methods=["POST"])
+def update_reviews():
+    try:
+        dbConnection = db.connectDB()
+        cursor = dbConnection.cursor()
+
+        review_id = request.form["update_review_id"]
+        rating = request.form["update_review_rating"]
+        comment = request.form["update_review_comment"]
+
+        query = "CALL sp_UpdateReview(%s, %s, %s);"
+        cursor.execute(query, (review_id, rating, comment))
+
+        cursor.nextset()
+        dbConnection.commit()
+
+        return redirect("/reviews")
+
+    except Exception as e:
+        print(f"Error executing update_reviews: {e}")
+        return "An error occurred.", 500
+    finally:
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
+
+
 # DELETE ROUTES
 ## CUSTOMERS
 @app.route("/customers/delete", methods=["POST"])
@@ -826,7 +885,29 @@ def delete_orderitems():
         # Close the DB connection, if it exists.
         if "dbConnection" in locals() and dbConnection:
             dbConnection.close()
+## REVIEWS
+@app.route("/reviews/delete", methods=["POST"])
+def delete_reviews():
+    try:
+        dbConnection = db.connectDB()
+        cursor = dbConnection.cursor()
 
+        review_id = request.form["delete_review_id"]
+
+        query = "CALL sp_DeleteReview(%s);"
+        cursor.execute(query, (review_id,))
+
+        dbConnection.commit()
+
+        print(f"DELETE Review. ID: {review_id}")
+        return redirect("/reviews")
+
+    except Exception as e:
+        print(f"Error executing delete_reviews: {e}")
+        return "An error occurred.", 500
+    finally:
+        if "dbConnection" in locals() and dbConnection:
+            dbConnection.close()
 
 
 
