@@ -2,6 +2,11 @@
 -- Author: Elliot Ousley
 -- Author: Hau'oli O'Brien
 
+--Citation for: Data Definition
+--Date: 5/8/25
+--Adapted from dsg_db.sql
+--Source URL: https://canvas.oregonstate.edu/courses/1999601/assignments/10006385?module_item_id=25352941
+
 SET FOREIGN_KEY_CHECKS=0;
 
 -- Creating Tables --

@@ -1,5 +1,11 @@
 import MySQLdb
 
+# Citation for the following code:
+# Date: 5/22/25
+# Adapted From Exploration - Web Application Technology
+# Used to set up website
+# Source URL: https://canvas.oregonstate.edu/courses/1999601/pages/exploration-web-application-technology-2?module_item_id=25352948
+
 # Database credentials
 host = 'classmysql.engr.oregonstate.edu'    
 user = 'cs340_ousleye'       
